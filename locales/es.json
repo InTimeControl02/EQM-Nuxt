@@ -1,0 +1,75 @@
+{
+  "nav": {
+    "catalog":   "Catálogo",
+    "about":     "Nosotros",
+    "contact":   "Contacto",
+    "login":     "Iniciar sesión",
+    "logout":    "Cerrar sesión",
+    "search":    "Buscar modelos, marcas o ubicaciones...",
+    "inventory": "Gestión de Inventario"
+  },
+  "brand": {
+    "tagline":  "Precision Engineering & Project Management",
+    "slogan":   "Quality begins with proper management of good equipment...",
+    "bilingual": "What you see is what we have !! *** Lo que ves es lo que tenemos !!"
+  },
+  "hero": {
+    "badge":       "Control System",
+    "title1":      "IN TIME CONTROL",
+    "title2":      "SIEMPRE A TIEMPO",
+    "description": "Crea tus solicitudes de equipos aquí mismo, con unos clicks podrás saber todo sobre nuestra disponibilidad y mucho más.",
+    "cta_primary": "Ver Equipos",
+    "cta_secondary": "Saber más"
+  },
+  "workflow": {
+    "title":       "Proceso de Solicitud",
+    "subtitle":    "Gestione su inventario de forma eficiente a través de nuestro flujo de trabajo digital automatizado.",
+    "step1_title": "Crear Sesión",
+    "step1_desc":  "Inicie sesión para habilitar las funciones de solicitud. El catálogo es público para visualización.",
+    "step2_title": "Elegir Productos",
+    "step2_desc":  "Explore el catálogo y añada los equipos necesarios a su carrito de solicitud.",
+    "step3_title": "Enviar Solicitud",
+    "step3_desc":  "Confirme los detalles del proyecto y mande la solicitud para revisión administrativa.",
+    "step4_title": "Aprobación",
+    "step4_desc":  "La solicitud queda pendiente hasta que un administrador verifique y autorice el préstamo.",
+    "notice":      "El cliente no necesita sesión para ver el catálogo pero sí la necesita para solicitar equipo.",
+    "notice_bold": "Nota importante:"
+  },
+  "categories": {
+    "title":    "Categorías de Equipo",
+    "subtitle": "Instrumentación especializada para cada fase de su proyecto.",
+    "loading":  "Cargando categorías...",
+    "error":    "No se pudieron cargar las categorías.",
+    "prev":     "Anterior",
+    "next":     "Siguiente",
+    "items":    "{count} categorías"
+  },
+  "features": {
+    "title":    "Información Detallada del Equipo",
+    "subtitle": "Transparencia total en cada unidad de nuestro inventario.",
+    "f1_title": "Certificados de Calidad e ISO",
+    "f1_desc":  "Acceso directo a documentos de calibración vigentes, certificados ISO y hojas de seguridad técnica.",
+    "f2_title": "Accesorios Incluidos",
+    "f2_desc":  "Listado detallado de cables, sondas, estuches y periféricos que acompañan a cada equipo solicitado.",
+    "f3_title": "Historial de Ubicaciones",
+    "f3_desc":  "Seguimiento completo de proyectos previos y ubicaciones donde el equipo ha sido desplegado anteriormente."
+  },
+  "footer": {
+    "tagline":    "Soluciones de medición industrial de alta gama y gestión de equipos para líderes globales de la construcción desde 1994.",
+    "links":      "Enlaces Rápidos",
+    "legal":      "Legal",
+    "contact":    "Contáctanos",
+    "address":    "802 Precision Way, Industrial Park West, Houston, TX 77001",
+    "phone":      "+1 (555) 012-3456",
+    "link1":      "Portal de Solicitudes",
+    "link2":      "Estándares de Seguridad",
+    "link3":      "Catálogo de Equipos",
+    "link4":      "Galería de Proyectos",
+    "legal1":     "Términos de Servicio",
+    "legal2":     "Política de Privacidad",
+    "legal3":     "Ética de Certificación",
+    "legal4":     "Política de Cumplimiento",
+    "copy":       "© 2024 Industrial Precision. Todos los derechos reservados.",
+    "values":     ["Seguridad", "Innovación", "Integridad"]
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "nav": {
+    "catalog":   "Catalog",
+    "about":     "About Us",
+    "contact":   "Contact",
+    "login":     "Sign In",
+    "logout":    "Sign Out",
+    "search":    "Search models, brands, or locations...",
+    "inventory": "Inventory Management"
+  },
+  "brand": {
+    "tagline":   "Precision Engineering & Project Management",
+    "slogan":    "Quality begins with proper management of good equipment...",
+    "bilingual": "What you see is what we have !! *** Lo que ves es lo que tenemos !!"
+  },
+  "hero": {
+    "badge":        "Control System",
+    "title1":       "IN TIME CONTROL",
+    "title2":       "ALWAYS ON TIME",
+    "description":  "Create your equipment requests right here — with just a few clicks you'll know everything about our availability and much more.",
+    "cta_primary":  "View Equipment",
+    "cta_secondary": "Learn More"
+  },
+  "workflow": {
+    "title":       "Request Process",
+    "subtitle":    "Manage your inventory efficiently through our automated digital workflow.",
+    "step1_title": "Create Session",
+    "step1_desc":  "Log in to enable request features. The catalog is public for browsing.",
+    "step2_title": "Choose Products",
+    "step2_desc":  "Browse the catalog and add the required equipment to your request cart.",
+    "step3_title": "Submit Request",
+    "step3_desc":  "Confirm project details and submit the request for administrative review.",
+    "step4_title": "Approval",
+    "step4_desc":  "The request remains pending until an administrator verifies and authorizes the loan.",
+    "notice":      "Customers do not need a session to view the catalog but do need one to request equipment.",
+    "notice_bold": "Important note:"
+  },
+  "categories": {
+    "title":    "Equipment Categories",
+    "subtitle": "Specialized instrumentation for every phase of your project.",
+    "loading":  "Loading categories...",
+    "error":    "Could not load categories.",
+    "prev":     "Previous",
+    "next":     "Next",
+    "items":    "{count} categories"
+  },
+  "features": {
+    "title":    "Detailed Equipment Information",
+    "subtitle": "Full transparency on every unit in our inventory.",
+    "f1_title": "Quality & ISO Certificates",
+    "f1_desc":  "Direct access to current calibration documents, ISO certificates, and technical safety sheets.",
+    "f2_title": "Included Accessories",
+    "f2_desc":  "Detailed list of cables, probes, cases, and peripherals that accompany each requested unit.",
+    "f3_title": "Location History",
+    "f3_desc":  "Complete tracking of previous projects and locations where the equipment has been deployed."
+  },
+  "footer": {
+    "tagline":   "Providing high-end industrial measurement solutions and equipment management for global construction leaders since 1994.",
+    "links":     "Quick Links",
+    "legal":     "Legal",
+    "contact":   "Contact Us",
+    "address":   "802 Precision Way, Industrial Park West, Houston, TX 77001",
+    "phone":     "+1 (555) 012-3456",
+    "link1":     "Request Portal",
+    "link2":     "Safety Standards",
+    "link3":     "Equipment Catalog",
+    "link4":     "Project Gallery",
+    "legal1":    "Terms of Service",
+    "legal2":    "Privacy Policy",
+    "legal3":    "Certification Ethics",
+    "legal4":    "Compliance Policy",
+    "copy":      "© 2024 Industrial Precision. All rights reserved.",
+    "values":    ["Safety", "Innovation", "Integrity"]
+  }
+}
