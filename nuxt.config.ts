@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  devtools: { enabled: true },
+  devtools: { enabled: false },
 
   modules: [
     '@nuxtjs/tailwindcss',
@@ -17,6 +17,8 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE ?? 'http://localhost:8000/api/v1',
       apiPublicToken: process.env.NUXT_PUBLIC_API_PUBLIC_TOKEN ?? '',
+      // Base URL for serving S3/storage images, e.g. http://localhost:8000/storage
+      apiStorageBase: process.env.NUXT_PUBLIC_API_STORAGE_BASE ?? 'http://localhost:8000/storage',
     },
   },
 
@@ -62,6 +64,10 @@ export default defineNuxtConfig({
         {
           rel: 'stylesheet',
           href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
+        },
+        {
+          rel: 'icon',
+          href: '/favicon_logo_ITC-removebg.png',
         },
       ],
     },

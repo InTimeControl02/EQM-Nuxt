@@ -1,7 +1,7 @@
 <template>
   <!-- Sticky Dark Navbar -->
   <nav class="sticky top-0 z-50 bg-[#050b18] text-white shadow-[var(--shadow-navbar)]">
-    <div class="max-w-7xl mx-auto px-8 h-14 flex items-center justify-between gap-6">
+    <div class="max-w-7xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between gap-6">
 
       <!-- Izquierda: ícono + label -->
       <div class="flex items-center gap-2 shrink-0">
@@ -11,7 +11,7 @@
         </span>
       </div>
 
-      <!-- Centro: links de navegación -->
+      <!-- Centro: links de navegación (desktop) -->
       <div class="hidden lg:flex items-center gap-1">
         <NuxtLink
           v-for="link in navLinks"
@@ -25,22 +25,33 @@
         </NuxtLink>
       </div>
 
-      <!-- Derecha: buscador + idioma + auth -->
-      <div class="flex items-center gap-3 flex-1 justify-end">
+      <!-- Derecha: buscador + idioma + auth (desktop) -->
+      <div class="hidden lg:flex items-center gap-3 flex-1 justify-end">
 
         <!-- Buscador -->
-        <div class="relative w-full max-w-xs hidden lg:block">
+        <div class="relative w-full max-w-xs">
           <input
+            v-model="searchInput"
             type="text"
             :placeholder="t('nav.search')"
-            class="w-full bg-[#111927] border-none rounded py-1.5 pl-9 pr-4
+            class="w-full bg-[#111927] border-none rounded py-1.5 pl-9 pr-8
                    text-xs text-slate-200 placeholder-slate-500
                    focus:outline-none focus:ring-1 focus:ring-primary-fixed-dim/60
                    transition-all"
+            @keydown.enter="submitSearch"
+            @keydown.escape="clearNavSearch"
           />
           <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500 text-lg">
             search
           </span>
+          <button
+            v-if="searchInput"
+            class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+            tabindex="-1"
+            @click="clearNavSearch"
+          >
+            <span class="material-symbols-outlined text-base leading-none">close</span>
+          </button>
         </div>
 
         <!-- Toggle de idioma -->
@@ -56,13 +67,12 @@
         </button>
 
         <!-- Divider -->
-        <div class="w-px h-5 bg-slate-700 hidden sm:block shrink-0" />
+        <div class="w-px h-5 bg-slate-700 shrink-0" />
 
         <!-- Auth: usuario autenticado o botón de login -->
         <template v-if="auth.isAuthenticated">
-          <!-- Avatar + nombre + settings -->
           <div class="flex items-center gap-2.5">
-            <div class="text-right hidden sm:block">
+            <div class="text-right">
               <p class="text-xs font-bold leading-none text-white">{{ auth.userName }}</p>
               <p class="text-[9px] text-slate-500 leading-none mt-1 uppercase font-bold tracking-tighter">
                 {{ auth.userRole }}
@@ -86,7 +96,6 @@
         </template>
 
         <template v-else>
-          <!-- Botón de login (visual) -->
           <button
             class="flex items-center gap-1.5 px-3 py-1.5 rounded
                    bg-primary text-white text-xs font-bold
@@ -97,38 +106,130 @@
             {{ t('nav.login') }}
           </button>
         </template>
-
-        <!-- Menú hamburguesa (mobile) -->
-        <button
-          class="lg:hidden text-slate-400 hover:text-white transition-colors"
-          @click="mobileMenuOpen = !mobileMenuOpen"
-        >
-          <span class="material-symbols-outlined text-xl">
-            {{ mobileMenuOpen ? 'close' : 'menu' }}
-          </span>
-        </button>
-
       </div>
+
+      <!-- Botón hamburguesa (móvil) -->
+      <button
+        class="lg:hidden text-slate-400 hover:text-white transition-colors"
+        @click="mobileMenuOpen = true"
+      >
+        <span class="material-symbols-outlined text-2xl">menu</span>
+      </button>
     </div>
 
-    <!-- Mobile menu -->
-    <Transition name="slide-down">
-      <div
-        v-if="mobileMenuOpen"
-        class="lg:hidden bg-[#070f1f] border-t border-slate-800 px-8 py-4 flex flex-col gap-1"
-      >
-        <NuxtLink
-          v-for="link in navLinks"
-          :key="link.key"
-          :to="link.to"
-          class="py-2.5 px-3 rounded text-sm text-slate-300
-                 hover:text-white hover:bg-white/8 transition-all"
-          @click="mobileMenuOpen = false"
-        >
-          {{ t(`nav.${link.key}`) }}
-        </NuxtLink>
-      </div>
-    </Transition>
+    <!-- Menú hamburguesa móvil (overlay) -->
+    <Teleport to="body">
+      <Transition name="mobile-menu">
+        <div v-if="mobileMenuOpen" class="lg:hidden fixed inset-0 z-[60]">
+          <!-- Fondo oscurecido -->
+          <div class="absolute inset-0 bg-black/70" @click="mobileMenuOpen = false" />
+
+          <!-- Panel del menú -->
+          <div class="absolute right-0 top-0 bottom-0 w-72 bg-[#050b18] overflow-y-auto">
+            <!-- Header del menú -->
+            <div class="sticky top-0 bg-[#050b18] border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+              <span class="text-white font-bold">{{ t('nav.inventory') }}</span>
+              <button
+                class="w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+                @click="mobileMenuOpen = false"
+              >
+                <span class="material-symbols-outlined text-xl">close</span>
+              </button>
+            </div>
+
+            <!-- Contenido del menú -->
+            <div class="px-6 py-4">
+              <!-- Links de navegación -->
+              <div class="mb-6">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Navegación</p>
+                <NuxtLink
+                  v-for="link in navLinks"
+                  :key="link.key"
+                  :to="link.to"
+                  class="block py-3 px-4 rounded text-slate-300 hover:text-white hover:bg-white/10 transition-all"
+                  active-class="!text-white !bg-white/10"
+                  @click="mobileMenuOpen = false"
+                >
+                  {{ t(`nav.${link.key}`) }}
+                </NuxtLink>
+              </div>
+
+              <!-- Buscador móvil -->
+              <div class="mb-6">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Búsqueda</p>
+                <div class="relative">
+                  <input
+                    v-model="searchInput"
+                    type="text"
+                    :placeholder="t('nav.search')"
+                    class="w-full bg-[#111927] border border-slate-700 rounded py-2.5 pl-9 pr-8
+                           text-sm text-slate-200 placeholder-slate-500
+                           focus:outline-none focus:border-primary transition-all"
+                    @keydown.enter="submitSearchMobile"
+                  />
+                  <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-lg">
+                    search
+                  </span>
+                </div>
+              </div>
+
+              <!-- Idioma -->
+              <div class="mb-6">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-3">Idioma</p>
+                <button
+                  class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded
+                         border border-slate-700 text-slate-300 text-sm font-bold
+                         hover:border-slate-500 hover:text-white transition-all"
+                  @click="toggleLocale"
+                >
+                  <span class="text-lg">{{ locale === 'es' ? '🇲🇽' : '🇺🇸' }}</span>
+                  <span>{{ locale === 'es' ? 'Español' : 'English' }}</span>
+                </button>
+              </div>
+
+              <!-- Auth -->
+              <div>
+                <template v-if="auth.isAuthenticated">
+                  <div class="flex items-center gap-3 mb-4">
+                    <div
+                      class="w-10 h-10 rounded-lg bg-on-primary-fixed-variant
+                             flex items-center justify-center
+                             border border-slate-700 text-sm font-bold text-white"
+                    >
+                      {{ auth.userInitials }}
+                    </div>
+                    <div>
+                      <p class="text-sm font-bold text-white">{{ auth.userName }}</p>
+                      <p class="text-xs text-slate-500">{{ auth.userRole }}</p>
+                    </div>
+                  </div>
+                  <button
+                    class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded
+                           border border-red-800 text-red-400 text-sm font-bold
+                           hover:bg-red-900/30 transition-all"
+                    @click="auth.logout()"
+                  >
+                    <span class="material-symbols-outlined text-lg">logout</span>
+                    {{ t('nav.logout') }}
+                  </button>
+                </template>
+                <template v-else>
+                  <button
+                    class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded
+                           bg-primary text-white text-sm font-bold
+                           hover:bg-primary-container transition-all"
+                    @click="openLoginModal"
+                  >
+                    <span class="material-symbols-outlined text-lg">login</span>
+                    {{ t('nav.login') }}
+                  </button>
+                </template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </nav>
 </template>
 
@@ -136,13 +237,45 @@
 import { useAuthStore } from '~/stores/auth'
 
 const { t, locale } = useI18n({ useScope: 'global' })
-const auth = useAuthStore()
+const auth   = useAuthStore()
+const router = useRouter()
+const route  = useRoute()
 const mobileMenuOpen = ref(false)
+
+// ── Buscador ────────────────────────────────────────────────────────
+const searchInput = ref('')
+
+// Sincronizar con URL cuando el usuario está en /catalog
+watch(
+  () => route.query.search,
+  (val) => { searchInput.value = (val as string) ?? '' },
+  { immediate: true },
+)
+
+function submitSearch() {
+  const q = searchInput.value.trim()
+  router.push({ path: '/catalog', query: { ...(q ? { search: q } : {}), page: 1 } })
+}
+
+function submitSearchMobile() {
+  submitSearch()
+  mobileMenuOpen.value = false
+}
+
+function clearNavSearch() {
+  searchInput.value = ''
+  if (route.path === '/catalog') {
+    const q = { ...route.query }
+    delete q.search
+    q.page = '1'
+    router.push({ query: q })
+  }
+}
 
 const navLinks = [
   { key: 'catalog', to: '/catalog' },
-  { key: 'about',   to: '/about' },
-  { key: 'contact', to: '/contact' },
+  { key: 'about',   to: '/' },
+  { key: 'contact', to: '/' },
 ]
 
 function toggleLocale() {
@@ -159,13 +292,21 @@ function openLoginModal() {
 </script>
 
 <style scoped>
-.slide-down-enter-active,
-.slide-down-leave-active {
-  transition: all 0.2s ease;
+/* Transición del menú móvil */
+.mobile-menu-enter-active,
+.mobile-menu-leave-active {
+  transition: opacity 0.3s ease;
 }
-.slide-down-enter-from,
-.slide-down-leave-to {
+.mobile-menu-enter-active > div:last-child,
+.mobile-menu-leave-active > div:last-child {
+  transition: transform 0.3s ease;
+}
+.mobile-menu-enter-from,
+.mobile-menu-leave-to {
   opacity: 0;
-  transform: translateY(-8px);
+}
+.mobile-menu-enter-from > div:last-child,
+.mobile-menu-leave-to > div:last-child {
+  transform: translateX(100%);
 }
 </style>

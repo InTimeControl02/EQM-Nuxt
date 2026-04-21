@@ -4,20 +4,8 @@
     <div class="max-w-7xl mx-auto flex items-stretch">
 
       <!-- Logo -->
-      <div class="py-5 px-8 flex items-center gap-4 bg-white shrink-0">
-        <div class="w-11 h-11 bg-primary rounded flex items-center justify-center shadow-sm">
-          <span class="material-symbols-outlined filled text-white text-2xl">
-            precision_manufacturing
-          </span>
-        </div>
-        <div class="flex flex-col">
-          <span class="text-xl font-extrabold text-primary font-headline tracking-tight">
-            Intime Control
-          </span>
-          <span class="text-[10px] uppercase tracking-widest text-slate-400 font-label leading-none mt-0.5">
-            {{ t('brand.tagline') }}
-          </span>
-        </div>
+      <div class="py-3 px-8 flex items-center gap-4 bg-white shrink-0">
+        <img src="/assets/imgs/itc tittle.png" alt="Intime Control" class="h-14 w-auto object-contain" />
       </div>
 
       <!-- Slogan strip -->

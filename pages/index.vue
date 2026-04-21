@@ -42,10 +42,10 @@
         </p>
 
         <div class="flex flex-wrap gap-4 mt-10 opacity-0-init animate-fade-up animate-delay-500">
-          <button class="btn-primary">
+          <NuxtLink to="/catalog" class="btn-primary">
             {{ t('hero.cta_primary') }}
             <span class="material-symbols-outlined text-xl">analytics</span>
-          </button>
+          </NuxtLink>
           <button class="btn-ghost">
             {{ t('hero.cta_secondary') }}
           </button>
