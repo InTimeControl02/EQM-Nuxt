@@ -6,6 +6,7 @@
       <NuxtPage />
     </main>
     <AppFooter />
+    <AuthModal />
   </div>
 </template>
 

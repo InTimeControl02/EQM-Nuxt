@@ -54,6 +54,23 @@
     "f3_title": "Historial de Ubicaciones",
     "f3_desc":  "Seguimiento completo de proyectos previos y ubicaciones donde el equipo ha sido desplegado anteriormente."
   },
+  "auth": {
+    "tab_login":             "Iniciar sesión",
+    "tab_register":          "Crear cuenta",
+    "nombre":                "Nombre completo",
+    "correo":                "Correo electrónico",
+    "telefono":              "Teléfono (opcional)",
+    "password":              "Contraseña",
+    "password_min":          "Mínimo 8 caracteres",
+    "password_confirmation": "Confirmar contraseña",
+    "submit_login":          "Entrar",
+    "submit_register":       "Crear cuenta",
+    "loading":               "Cargando...",
+    "have_account":          "¿Ya tienes cuenta?",
+    "no_account":            "¿No tienes cuenta?",
+    "switch_to_login":       "Inicia sesión",
+    "switch_to_register":    "Regístrate aquí"
+  },
   "footer": {
     "tagline":    "Soluciones de medición industrial de alta gama y gestión de equipos para líderes globales de la construcción desde 1994.",
     "links":      "Enlaces Rápidos",

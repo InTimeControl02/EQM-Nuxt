@@ -284,10 +284,11 @@ function toggleLocale() {
   window.location.reload()
 }
 
-// Por ahora solo cierra el menú — login modal se implementa con auth real
+const authModal = useAuthModal()
+
 function openLoginModal() {
-  // TODO: abrir modal de login cuando exista la tabla de usuarios
-  console.info('Login modal pendiente de implementación')
+  authModal.open('login')
+  mobileMenuOpen.value = false
 }
 </script>
 

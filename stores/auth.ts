@@ -1,20 +1,19 @@
-/**
- * stores/auth.ts
- *
- * Store de autenticación con Pinia.
- * Por ahora es visual — la lógica real se implementará
- * cuando exista la tabla de usuarios en el front.
- */
-
 import { defineStore } from 'pinia'
 
 export interface AuthUser {
   id: number
-  name: string
-  email: string
-  initials: string
-  role: string
+  nombre: string
+  correo: string
+  telefono: string | null
+  created_at: string
 }
+
+interface AuthResponse {
+  token: string
+  user: AuthUser
+}
+
+const TOKEN_KEY = 'itc_auth_token'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -25,37 +24,119 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated: (state) => !!state.token && !!state.user,
-    userInitials: (state) => state.user?.initials ?? '',
-    userName: (state) => state.user?.name ?? '',
-    userRole: (state) => state.user?.role ?? '',
+    userName: (state) => state.user?.nombre ?? '',
+    userInitials: (state) => {
+      if (!state.user?.nombre) return ''
+      const parts = state.user.nombre.trim().split(/\s+/)
+      return parts.length >= 2
+        ? (parts[0][0] + parts[1][0]).toUpperCase()
+        : parts[0].slice(0, 2).toUpperCase()
+    },
+    userRole: () => 'Cliente',
   },
 
   actions: {
-    // ── Placeholder login (se reemplazará con llamada real a la API) ──
-    async login(email: string, _password: string) {
-      this.isLoading = true
-      // TODO: llamar a POST /api/v1/auth/login con useApi()
-      // Por ahora simula un login visual
-      await new Promise((r) => setTimeout(r, 600))
-      this.user = {
-        id: 1,
-        name: 'Usuario Demo',
-        email,
-        initials: email.slice(0, 2).toUpperCase(),
-        role: 'Cliente',
-      }
-      this.token = 'demo-token'
-      this.isLoading = false
+    _setSession(token: string, user: AuthUser) {
+      this.token = token
+      this.user = user
+      if (import.meta.client) localStorage.setItem(TOKEN_KEY, token)
     },
 
-    logout() {
-      this.user = null
+    _clearSession() {
       this.token = null
+      this.user = null
+      if (import.meta.client) localStorage.removeItem(TOKEN_KEY)
     },
 
-    // Rehidratar desde cookie al recargar (se implementará con sesiones reales)
+    async register(data: {
+      nombre: string
+      correo: string
+      telefono?: string
+      password: string
+      password_confirmation: string
+    }) {
+      this.isLoading = true
+      const config = useRuntimeConfig()
+      try {
+        const res = await $fetch<AuthResponse>(`${config.public.apiBase}/eqm/auth/register`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${config.public.apiPublicToken}`,
+            Accept: 'application/json',
+          },
+          body: data,
+        })
+        this._setSession(res.token, res.user)
+        return { success: true as const }
+      } catch (err: any) {
+        return { success: false as const, errors: err?.data?.errors as Record<string, string[]> | undefined }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async login(correo: string, password: string) {
+      this.isLoading = true
+      const config = useRuntimeConfig()
+      try {
+        const res = await $fetch<AuthResponse>(`${config.public.apiBase}/eqm/auth/login`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${config.public.apiPublicToken}`,
+            Accept: 'application/json',
+          },
+          body: { correo, password },
+        })
+        this._setSession(res.token, res.user)
+        return { success: true as const }
+      } catch (err: any) {
+        return { success: false as const, errors: err?.data?.errors as Record<string, string[]> | undefined }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async logout() {
+      if (!this.token) return
+      const config = useRuntimeConfig()
+      const token = this.token
+      this._clearSession()
+      try {
+        await $fetch(`${config.public.apiBase}/eqm/auth/logout`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        })
+      } catch {
+        // silent — session already cleared locally
+      }
+    },
+
+    async fetchMe() {
+      if (!this.token) return
+      const config = useRuntimeConfig()
+      try {
+        const user = await $fetch<AuthUser>(`${config.public.apiBase}/eqm/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            Accept: 'application/json',
+          },
+        })
+        this.user = user
+      } catch {
+        this._clearSession()
+      }
+    },
+
     hydrate() {
-      // TODO: leer token de cookie HttpOnly o localStorage
+      if (!import.meta.client) return
+      const token = localStorage.getItem(TOKEN_KEY)
+      if (token) {
+        this.token = token
+        this.fetchMe()
+      }
     },
   },
 })

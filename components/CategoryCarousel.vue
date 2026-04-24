@@ -1,104 +1,80 @@
 <template>
-  <!-- Sección carrusel -->
   <section class="snap-start min-h-screen flex flex-col justify-center
-                  px-8 py-16 bg-surface-container-lowest overflow-hidden">
+                  px-8 py-16 bg-surface-container-lowest">
     <div class="max-w-7xl mx-auto w-full">
 
-      <!-- Header del carrusel -->
-      <div class="flex flex-col md:flex-row justify-between items-end mb-10 gap-6">
-        <div>
-          <h2 class="text-3xl font-extrabold font-headline text-primary itc-animate-in itc-delay-1">
-            {{ t('categories.title') }}
-          </h2>
-          <p class="text-secondary mt-2 itc-animate-in itc-delay-2">
-            {{ t('categories.subtitle') }}
-          </p>
-        </div>
-
-        <!-- Controles -->
-        <div class="flex items-center gap-3 itc-animate-in itc-delay-3">
-          <span class="text-xs text-slate-400">
-            {{ t('categories.items', { count: rootCategories.length }) }}
-          </span>
-          <button
-            class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center
-                   text-slate-400 hover:border-primary hover:text-primary transition-all
-                   disabled:opacity-30 disabled:cursor-not-allowed"
-            :disabled="!canScrollLeft"
-            :title="t('categories.prev')"
-            @click="scrollCarousel(-1)"
-          >
-            <span class="material-symbols-outlined text-xl">arrow_back</span>
-          </button>
-          <button
-            class="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center
-                   text-slate-400 hover:border-primary hover:text-primary transition-all
-                   disabled:opacity-30 disabled:cursor-not-allowed"
-            :disabled="!canScrollRight"
-            :title="t('categories.next')"
-            @click="scrollCarousel(1)"
-          >
-            <span class="material-symbols-outlined text-xl">arrow_forward</span>
-          </button>
-        </div>
+      <!-- Header -->
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-extrabold font-headline text-primary mb-4 itc-animate-in itc-delay-1">
+          {{ t('categories.title') }}
+        </h2>
+        <p class="text-lg text-secondary max-w-2xl mx-auto itc-animate-in itc-delay-2">
+          {{ t('categories.subtitle') }}
+        </p>
       </div>
 
       <!-- Estado: cargando -->
-      <div v-if="pending" class="flex items-center gap-3 py-12 text-slate-400">
+      <div v-if="pending" class="flex items-center justify-center gap-3 py-24 text-slate-400">
         <span class="material-symbols-outlined animate-spin text-2xl">progress_activity</span>
         <span class="text-sm">{{ t('categories.loading') }}</span>
       </div>
 
       <!-- Estado: error -->
-      <div v-else-if="error" class="py-12 text-center">
+      <div v-else-if="error" class="py-24 text-center">
         <span class="material-symbols-outlined text-error text-3xl block mb-2">error</span>
         <p class="text-sm text-slate-500">{{ t('categories.error') }}</p>
       </div>
 
-      <!-- Carrusel -->
+      <!-- Grid de categorías -->
       <div
         v-else
-        ref="carouselRef"
-        class="flex gap-6 overflow-x-auto pb-4 hide-scrollbar select-none"
-        :class="isDragging ? 'cursor-grabbing' : 'cursor-grab'"
-        @scroll="updateScrollState"
-        @mousedown="onDragStart"
-        @mousemove="onDragMove"
-        @mouseup="onDragEnd"
-        @mouseleave="onDragEnd"
-        @touchstart.passive="onTouchStart"
-        @touchmove.passive="onTouchMove"
+        class="grid grid-cols-2 lg:grid-cols-4 gap-5"
       >
-        <div
-          v-for="category in rootCategories"
+        <NuxtLink
+          v-for="(category, i) in displayCategories"
           :key="category.id"
-          class="min-w-[280px] max-w-[280px] min-h-[250px] max-h-[250px] card p-7 shrink-0
-                 flex flex-col itc-animate-in"
-          :style="isDragging ? 'pointer-events: none' : ''"
+          :to="`/catalog?category=${category.id}`"
+          class="group card overflow-hidden flex flex-col hover:-translate-y-1 transition-all duration-300
+                 itc-animate-in"
+          :class="`itc-delay-${Math.min(i + 2, 6)}`"
         >
-          <!-- Nombre según locale -->
-          <h4 class="font-bold text-lg mb-2 text-on-surface font-headline leading-snug line-clamp-2">
-            {{ locale === 'es' ? category.nombre_es : category.nombre_en }}
-          </h4>
-
-          <!-- Descripción según locale — crece para llenar espacio -->
-          <p class="text-sm text-slate-500 leading-relaxed line-clamp-3 flex-1">
-            {{ (locale === 'es' ? category.descripcion_es : category.descripcion_en) || '—' }}
-          </p>
-
-          <!-- Código + badge de hijos -->
-          <div class="flex items-center justify-between pt-3 border-t border-slate-100 mt-3">
-            <span class="font-mono text-xs font-bold text-primary bg-surface-container px-2 py-1 rounded">
-              #{{ category.codigo }}
-            </span>
-            <span
-              v-if="category.children?.length"
-              class="text-[11px] font-bold text-secondary bg-surface-container-low px-2 py-1 rounded-full"
-            >
-              {{ category.children.length }} sub
-            </span>
+          <!-- Placeholder colorido con icono -->
+          <div
+            class="h-40 flex items-center justify-center"
+            :class="categoryBg(i)"
+          >
+            <span class="material-symbols-outlined text-6xl text-white/90">{{ categoryIcon(i) }}</span>
           </div>
-        </div>
+
+          <!-- Info -->
+          <div class="flex flex-col flex-1 p-5">
+            <h3 class="font-headline font-bold text-base text-on-surface leading-snug line-clamp-2 mb-2">
+              {{ locale === 'es' ? category.nombre_es : category.nombre_en }}
+            </h3>
+            <p class="text-xs text-slate-500 leading-relaxed line-clamp-3 flex-1">
+              {{ (locale === 'es' ? category.descripcion_es : category.descripcion_en) || t('categories.no_desc') }}
+            </p>
+
+            <div class="flex items-center justify-between pt-4 mt-3 border-t border-slate-100">
+              <span class="font-mono text-[10px] font-bold text-primary bg-surface-container px-2 py-0.5 rounded">
+                #{{ category.codigo }}
+              </span>
+              <span class="flex items-center gap-1 text-xs font-semibold text-primary
+                           group-hover:gap-2 transition-all duration-200">
+                {{ t('categories.browse') }}
+                <span class="material-symbols-outlined text-sm">arrow_forward</span>
+              </span>
+            </div>
+          </div>
+        </NuxtLink>
+      </div>
+
+      <!-- CTA ver todo -->
+      <div v-if="!pending && !error && displayCategories.length" class="text-center mt-10 itc-animate-in itc-delay-6">
+        <NuxtLink to="/catalog" class="btn-ghost inline-flex items-center gap-2">
+          {{ t('categories.view_all') }}
+          <span class="material-symbols-outlined text-xl">grid_view</span>
+        </NuxtLink>
       </div>
 
     </div>
@@ -106,12 +82,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
-
 const { t, locale } = useI18n({ useScope: 'global' })
 const { apiFetch } = useApi()
 
-// ── Tipos ──────────────────────────────────────────────────────────
 interface Category {
   id: number
   id_padre: number | null
@@ -124,77 +97,42 @@ interface Category {
   children?: Category[]
 }
 
-// ── Fetch de categorías ────────────────────────────────────────────
 const { data, pending, error } = await useAsyncData<Category[]>(
   'eqm-categories',
   () => apiFetch<Category[]>('/eqm/categories', 'public'),
 )
 
-const rootCategories = computed<Category[]>(() =>
-  (data.value ?? []).filter((c) => c.nodo === 1),
+const displayCategories = computed<Category[]>(() =>
+  (data.value ?? []).filter((c) => c.nodo === 1).slice(0, 8),
 )
 
-// ── Carrusel ───────────────────────────────────────────────────────
-const carouselRef    = ref<HTMLElement | null>(null)
-const canScrollLeft  = ref(false)
-const canScrollRight = ref(false)
-const CARD_WIDTH     = 280 + 24
+const ICONS = [
+  'category',           // General
+  'architecture',       // Civil y arquitectura
+  'foundation',         // Estructuras
+  'settings',           // Mecánico
+  'plumbing',           // Tuberías
+  'bolt',               // Eléctrica
+  'precision_manufacturing', // Instrumentación
+  'cell_tower',         // Comunicaciones
+]
 
-function scrollCarousel(direction: -1 | 1) {
-  carouselRef.value?.scrollBy({ left: direction * CARD_WIDTH, behavior: 'smooth' })
+const BG_CLASSES = [
+  'bg-blue-700',
+  'bg-slate-700',
+  'bg-indigo-700',
+  'bg-cyan-700',
+  'bg-teal-700',
+  'bg-violet-700',
+  'bg-sky-700',
+  'bg-emerald-700',
+]
+
+function categoryIcon(i: number): string {
+  return ICONS[i % ICONS.length]
 }
 
-function updateScrollState() {
-  const el = carouselRef.value
-  if (!el) return
-  canScrollLeft.value  = el.scrollLeft > 4
-  canScrollRight.value = el.scrollLeft + el.clientWidth < el.scrollWidth - 4
-}
-
-onMounted(async () => {
-  await nextTick()
-  updateScrollState()
-})
-
-watch(rootCategories, async () => {
-  await nextTick()
-  updateScrollState()
-}, { immediate: false })
-
-// ── Drag-to-scroll ─────────────────────────────────────────────────
-const isDragging  = ref(false)
-const dragStartX  = ref(0)
-const scrollStart = ref(0)
-
-function onDragStart(e: MouseEvent) {
-  isDragging.value  = true
-  dragStartX.value  = e.pageX
-  scrollStart.value = carouselRef.value?.scrollLeft ?? 0
-}
-
-function onDragMove(e: MouseEvent) {
-  if (!isDragging.value || !carouselRef.value) return
-  carouselRef.value.scrollLeft = scrollStart.value - (e.pageX - dragStartX.value)
-}
-
-function onDragEnd() {
-  if (!isDragging.value) return
-  isDragging.value = false
-  updateScrollState()
-}
-
-// Touch
-const touchStartX = ref(0)
-const touchScrollStart = ref(0)
-
-function onTouchStart(e: TouchEvent) {
-  touchStartX.value     = e.touches[0].pageX
-  touchScrollStart.value = carouselRef.value?.scrollLeft ?? 0
-}
-
-function onTouchMove(e: TouchEvent) {
-  if (!carouselRef.value) return
-  carouselRef.value.scrollLeft = touchScrollStart.value - (e.touches[0].pageX - touchStartX.value)
-  updateScrollState()
+function categoryBg(i: number): string {
+  return BG_CLASSES[i % BG_CLASSES.length]
 }
 </script>

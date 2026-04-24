@@ -42,7 +42,10 @@
     "error":    "Could not load categories.",
     "prev":     "Previous",
     "next":     "Next",
-    "items":    "{count} categories"
+    "items":    "{count} categories",
+    "browse":   "Browse equipment",
+    "view_all": "View full catalog",
+    "no_desc":  "Specialized instrumentation for your project."
   },
   "features": {
     "title":    "Detailed Equipment Information",
@@ -123,6 +126,23 @@
     "loading":           "Loading equipment...",
     "error":             "Could not load equipment.",
     "ranges":            "Ranges"
+  },
+  "auth": {
+    "tab_login":             "Sign In",
+    "tab_register":          "Create Account",
+    "nombre":                "Full name",
+    "correo":                "Email address",
+    "telefono":              "Phone (optional)",
+    "password":              "Password",
+    "password_min":          "Minimum 8 characters",
+    "password_confirmation": "Confirm password",
+    "submit_login":          "Sign In",
+    "submit_register":       "Create Account",
+    "loading":               "Loading...",
+    "have_account":          "Already have an account?",
+    "no_account":            "Don't have an account?",
+    "switch_to_login":       "Sign in",
+    "switch_to_register":    "Register here"
   },
   "footer": {
     "tagline":   "Providing high-end industrial measurement solutions and equipment management for global construction leaders since 1994.",
