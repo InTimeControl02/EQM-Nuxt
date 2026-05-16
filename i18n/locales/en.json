@@ -6,7 +6,9 @@
     "login":     "Sign In",
     "logout":    "Sign Out",
     "search":    "Search equipments...",
-    "inventory": "Inventory Management"
+    "inventory": "EQM",
+    "account":   "My Account",
+    "requests":  "Requests"
   },
   "brand": {
     "tagline":   "Precision Engineering & Project Management",
@@ -118,6 +120,9 @@
     "no_certs":          "No certifications on record",
     "no_location":       "No project history",
     "no_accessories":    "No accessories registered",
+    "available":         "Available",
+    "not_available":     "Not Available",
+    "qty_available":     "Available",
     "add_to_cart":       "Request Equipment",
     "attachments":       "Attached documents",
     "videos":            "Videos",
@@ -126,6 +131,25 @@
     "loading":           "Loading equipment...",
     "error":             "Could not load equipment.",
     "ranges":            "Ranges"
+  },
+  "cart": {
+    "title":             "My Cart",
+    "empty":             "Your cart is empty",
+    "empty_cta":         "Browse catalog",
+    "remove":            "Remove",
+    "notes_label":       "Request notes (optional)",
+    "notes_placeholder": "E.g: Need for project X, deliver on site...",
+    "submit":            "Submit request",
+    "submitting":        "Submitting...",
+    "submitted_title":   "Request submitted!",
+    "submitted_msg":     "Your request was received and is pending approval.",
+    "go_catalog":        "Keep browsing catalog",
+    "add_success":       "Added to cart",
+    "already_in_cart":   "Already in cart",
+    "login_required":    "Sign in to request equipment",
+    "qty":               "Quantity",
+    "adding":            "Adding...",
+    "qty_items":         "{n} item in cart | {n} items in cart"
   },
   "auth": {
     "tab_login":             "Sign In",
@@ -142,7 +166,15 @@
     "have_account":          "Already have an account?",
     "no_account":            "Don't have an account?",
     "switch_to_login":       "Sign in",
-    "switch_to_register":    "Register here"
+    "switch_to_register":    "Register here",
+    "verify_title":          "Verify your email",
+    "verify_subtitle":       "We sent a 6-digit code to",
+    "verify_submit":         "Verify",
+    "verify_resend":         "Resend code",
+    "verify_resend_wait":    "Resend in {s}s",
+    "verify_resend_sent":    "Code resent!",
+    "verify_back":           "Back to sign in",
+    "verify_error":          "Invalid or expired code. Try again."
   },
   "footer": {
     "tagline":   "Providing high-end industrial measurement solutions and equipment management for global construction leaders since 1994.",
@@ -157,7 +189,42 @@
     "link4":     "Project Gallery",
     "legal1":    "Certification",
     "legal2":    "Privacy Policy",
-    "copy":      "© 2024 Industrial Precision. All rights reserved.",
+    "copy":      "© 2026 In Time Control S.A. de C.V. All rights reserved.",
     "values":    ["Safety", "Innovation", "Integrity"]
+  },
+  "requests": {
+    "title":           "My Requests",
+    "loading":         "Loading requests...",
+    "error":           "Could not load requests.",
+    "empty":           "No requests yet",
+    "empty_cta":       "Browse catalog",
+    "back":            "← Requests",
+    "detail_title":    "Request",
+    "items_label":     "unit | units",
+    "submitted_at":    "Submitted",
+    "created_at":      "Created",
+    "notes":           "Notes",
+    "no_notes":        "No notes",
+    "internal_notes":  "Internal notes",
+    "status_enviada":  "Submitted",
+    "status_aprobada": "Approved",
+    "status_rechazada":"Rejected",
+    "status_pendiente":"Pending",
+    "status_cancelada":"Cancelled",
+    "code":            "Code",
+    "name":            "Equipment",
+    "qty":             "Quantity",
+    "countable":       "Countable",
+    "total":           "{total} requests"
+  },
+  "account": {
+    "title":          "My Account",
+    "member_since":   "Member since",
+    "contact":        "Contact information",
+    "no_phone":       "No phone registered",
+    "quick_links":    "Quick access",
+    "go_requests":    "My requests",
+    "go_catalog":     "Browse catalog",
+    "loading":        "Loading profile..."
   }
 }

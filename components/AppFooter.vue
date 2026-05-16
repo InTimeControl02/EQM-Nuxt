@@ -1,8 +1,7 @@
 <template>
-  <footer class="bg-slate-900 text-white pt-16 pb-8 border-t border-slate-800">
-    <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-9 gap-12 mb-12">
-
-      <!-- Marca -->
+  <footer class="bg-slate-900 text-white pb-8 border-t border-slate-800">
+    <!-- <div class="max-w-7xl mx-auto px-8 grid grid-cols-1 md:grid-cols-9 gap-12 mb-12">
+      
       <div class="col-span-3">
         <div class="flex items-center gap-3 mb-4">
           <img src="/assets/imgs/favicon_logo_ITC-removebg.png" alt="Intime Control" class="w-10 h-10 object-contain" />
@@ -13,7 +12,6 @@
         </p>
       </div>
 
-            <!-- Contacto -->
       <div class="col-span-3">
         <h4 class="font-bold mb-6 text-slate-200 text-sm uppercase tracking-wider">
           {{ t('footer.contact') }}
@@ -38,7 +36,6 @@
         </div>
       </div>
 
-      <!-- Legal -->
       <div class="col-span-3">
         <h4 class="font-bold mb-6 text-slate-200 text-sm uppercase tracking-wider">
           {{ t('footer.legal') }}
@@ -70,12 +67,26 @@
         </div>
       </div>
 
-    </div>
+    </div> -->
 
     <!-- Bottom bar -->
     <div class="max-w-7xl mx-auto px-8 pt-8 border-t border-slate-800
                 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-xs text-slate-500">{{ t('footer.copy') }}</p>
+
+      <!-- Contacto -->
+      <div class="flex items-center gap-5 text-xs text-slate-500">
+          <span class="material-symbols-outlined text-sm">call</span>
+          {{ t('footer.phone') }}
+        <a
+          href="mailto:info@intimecontrol.com"
+          class="flex items-center gap-1.5 hover:text-slate-300 transition-colors"
+        >
+          <span class="material-symbols-outlined text-sm">mail</span>
+          info@intimecontrol.com
+        </a>
+      </div>
+
       <div class="flex items-center gap-3">
         <!-- LinkedIn -->
         <a href="https://www.linkedin.com/company/in-time-control/posts/?feedView=all" target="_blank" class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center

@@ -1,8 +1,8 @@
 <template>
   <NuxtLink :to="`/catalog/${equipment.id}`"
     class="bg-surface-container-lowest rounded-xl overflow-hidden
-           shadow-[0_4px_20px_rgba(7,30,39,0.04)]
-           hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer"
+           shadow-[0_4px_24px_rgba(7,30,39,0.15)]
+           hover:shadow-[0_8px_32px_rgba(7,30,39,0.20)] hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer"
   >
     <!-- Imagen / Placeholder -->
     <div
@@ -44,7 +44,7 @@
         </div>
         <div class="flex justify-between border-b border-slate-50 pb-1">
           <span class="text-[10px] font-bold text-slate-400 uppercase">{{ t('catalog.location') }}</span>
-          <span class="font-medium text-on-surface text-right truncate max-w-[55%]">{{ locationLabel }}</span>
+          <span class="font-medium text-right truncate max-w-[55%]" :class="locationClass">{{ locationLabel }}</span>
         </div>
         <div class="flex flex-col gap-0.5 border-b border-slate-50 pb-1">
           <span class="text-[10px] font-bold text-slate-400 uppercase">{{ t('catalog.code') }}</span>
@@ -74,7 +74,7 @@ interface CapacidadRango {
 }
 
 interface EquipmentLocation {
-  project?: { nombre_proy: string; ciudad?: string }
+  project?: { nombre_proy: string; ciudad?: string; id_itc?: string }
 }
 
 interface Equipment {
@@ -109,6 +109,12 @@ const coverUrl = computed(() => imageUrl(props.equipment.cover_image?.path))
 const locationLabel = computed(() =>
   props.equipment.current_location?.project?.nombre_proy || '—',
 )
+
+const locationClass = computed(() => {
+  const idItc = props.equipment.current_location?.project?.id_itc
+  if (!idItc) return 'text-on-surface'
+  return idItc === 'G1301' ? 'text-green-600 font-semibold' : 'text-amber-500 font-semibold'
+})
 
 const capacidad = computed(() => {
   const rango = props.equipment.capacidad_rango

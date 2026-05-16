@@ -15,6 +15,24 @@ interface AuthResponse {
 
 const TOKEN_KEY = 'itc_auth_token'
 
+function _deviceName(): string {
+  if (!import.meta.client) return 'Server'
+  const ua = navigator.userAgent
+  const browser =
+    /Edg\//.test(ua)     ? 'Edge'    :
+    /Chrome\//.test(ua)  ? 'Chrome'  :
+    /Firefox\//.test(ua) ? 'Firefox' :
+    /Safari\//.test(ua)  ? 'Safari'  : 'Browser'
+  const os =
+    /Windows/.test(ua)        ? 'Windows' :
+    /Android/.test(ua)        ? 'Android' :
+    /iPhone|iPad/.test(ua)    ? 'iOS'     :
+    /Mac/.test(ua)            ? 'macOS'   :
+    /Linux/.test(ua)          ? 'Linux'   : 'Unknown'
+  const cores = navigator.hardwareConcurrency ?? '?'
+  return `${browser} · ${os} · ${cores} cores`
+}
+
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null as AuthUser | null,
@@ -24,8 +42,8 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated: (state) => !!state.token && !!state.user,
-    userName: (state) => state.user?.nombre ?? '',
-    userInitials: (state) => {
+    userName:        (state) => state.user?.nombre ?? '',
+    userInitials:    (state) => {
       if (!state.user?.nombre) return ''
       const parts = state.user.nombre.trim().split(/\s+/)
       return parts.length >= 2
@@ -38,13 +56,13 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     _setSession(token: string, user: AuthUser) {
       this.token = token
-      this.user = user
+      this.user  = user
       if (import.meta.client) localStorage.setItem(TOKEN_KEY, token)
     },
 
     _clearSession() {
       this.token = null
-      this.user = null
+      this.user  = null
       if (import.meta.client) localStorage.removeItem(TOKEN_KEY)
     },
 
@@ -58,18 +76,28 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
       const config = useRuntimeConfig()
       try {
-        const res = await $fetch<AuthResponse>(`${config.public.apiBase}/eqm/auth/register`, {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${config.public.apiPublicToken}`,
-            Accept: 'application/json',
+        const res = await $fetch<{ status?: string; token?: string; user?: AuthUser }>(
+          `${config.public.apiBase}/eqm/auth/register`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${config.public.apiPublicToken}`,
+              Accept: 'application/json',
+            },
+            body: { ...data, device_name: _deviceName() },
           },
-          body: data,
-        })
-        this._setSession(res.token, res.user)
-        return { success: true as const }
+        )
+
+        if (res.status === 'verification_required') {
+          return { success: true as const, verificationRequired: true as const }
+        }
+        this._setSession(res.token!, res.user!)
+        return { success: true as const, verificationRequired: false as const }
       } catch (err: any) {
-        return { success: false as const, errors: err?.data?.errors as Record<string, string[]> | undefined }
+        return {
+          success: false as const,
+          errors: err?.data?.errors as Record<string, string[]> | undefined,
+        }
       } finally {
         this.isLoading = false
       }
@@ -85,22 +113,83 @@ export const useAuthStore = defineStore('auth', {
             Authorization: `Bearer ${config.public.apiPublicToken}`,
             Accept: 'application/json',
           },
-          body: { correo, password },
+          body: { correo, password, device_name: _deviceName() },
         })
         this._setSession(res.token, res.user)
         return { success: true as const }
       } catch (err: any) {
-        return { success: false as const, errors: err?.data?.errors as Record<string, string[]> | undefined }
+        const status = err?.status ?? err?.statusCode ?? err?.response?.status
+        // No verificado → backend reenvió código automáticamente
+        if (status === 403) {
+          return { success: false as const, needsVerification: true as const }
+        }
+        // Correo no registrado → mostrar error en campo correo
+        if (status === 404) {
+          return {
+            success: false as const,
+            errors: { correo: [err?.data?.message ?? 'Correo no encontrado'] } as Record<string, string[]>,
+          }
+        }
+        return {
+          success: false as const,
+          errors:  err?.data?.errors  as Record<string, string[]> | undefined,
+          message: err?.data?.message as string | undefined,
+        }
       } finally {
         this.isLoading = false
+      }
+    },
+
+    async verifyEmail(correo: string, code: string) {
+      this.isLoading = true
+      const config = useRuntimeConfig()
+      try {
+        const res = await $fetch<AuthResponse>(`${config.public.apiBase}/eqm/auth/verify-email`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${config.public.apiPublicToken}`,
+            Accept: 'application/json',
+          },
+          body: { correo, code, device_name: _deviceName() },
+        })
+        this._setSession(res.token, res.user)
+        return { success: true as const }
+      } catch (err: any) {
+        return {
+          success: false as const,
+          message: err?.data?.message as string | undefined,
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async resendVerification(correo: string) {
+      const config = useRuntimeConfig()
+      try {
+        await $fetch(`${config.public.apiBase}/eqm/auth/resend-verification`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${config.public.apiPublicToken}`,
+            Accept: 'application/json',
+          },
+          body: { correo },
+        })
+        return { success: true as const }
+      } catch (err: any) {
+        return {
+          success: false as const,
+          message: err?.data?.message as string | undefined,
+        }
       }
     },
 
     async logout() {
       if (!this.token) return
       const config = useRuntimeConfig()
-      const token = this.token
+      const token  = this.token
       this._clearSession()
+      useCartStore().reset()
       try {
         await $fetch(`${config.public.apiBase}/eqm/auth/logout`, {
           method: 'POST',

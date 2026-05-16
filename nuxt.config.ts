@@ -73,5 +73,10 @@ export default defineNuxtConfig({
     },
   },
 
+  // Redirect landing → catalog
+  routeRules: {
+    '/': { redirect: '/catalog' },
+  },
+
   compatibilityDate: '2024-09-16',
 })

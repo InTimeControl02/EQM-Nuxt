@@ -7,7 +7,7 @@
  *   - Token privado (API_PRIVATE_TOKEN, solo servidor) → carrito, solicitudes
  */
 
-export type ApiToken = 'public' | 'private'
+export type ApiToken = 'public' | 'private' | 'user'
 
 export function useApi() {
   const config = useRuntimeConfig()
@@ -16,7 +16,7 @@ export function useApi() {
    * Realiza un fetch a la API de Laravel con el token Bearer correspondiente.
    *
    * @param endpoint  Ruta relativa, ej: '/eqm/categories'
-   * @param token     'public' (default) | 'private'
+   * @param token     'public' (default) | 'private' | 'user' (Bearer del front_user autenticado)
    * @param options   Opciones adicionales de $fetch
    */
   async function apiFetch<T>(
@@ -24,19 +24,23 @@ export function useApi() {
     token: ApiToken = 'public',
     options: Parameters<typeof $fetch>[1] = {},
   ): Promise<T> {
-    // El token público está disponible en cliente y servidor.
-    // El token privado SOLO debe usarse en server-side (server routes / useAsyncData en SSR).
-    const bearerToken =
-      token === 'public'
-        ? config.public.apiPublicToken
-        : config.apiPrivateToken
+    let bearerToken: string | null = null
+
+    if (token === 'public') {
+      bearerToken = config.public.apiPublicToken
+    } else if (token === 'private') {
+      bearerToken = config.apiPrivateToken
+    } else {
+      // 'user' — token del front_user autenticado (solo cliente)
+      bearerToken = useAuthStore().token
+    }
 
     const baseURL = config.public.apiBase
 
     return $fetch<T>(`${baseURL}${endpoint}`, {
       ...options,
       headers: {
-        Authorization: `Bearer ${bearerToken}`,
+        ...(bearerToken ? { Authorization: `Bearer ${bearerToken}` } : {}),
         Accept: 'application/json',
         'Content-Type': 'application/json',
         ...(options.headers ?? {}),

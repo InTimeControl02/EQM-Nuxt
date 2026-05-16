@@ -6,7 +6,9 @@
     "login":     "Iniciar sesión",
     "logout":    "Cerrar sesión",
     "search":    "Buscar equipos...",
-    "inventory": "Gestión de Inventario"
+    "inventory": "EQM",
+    "account":   "Mi cuenta",
+    "requests":  "Solicitudes"
   },
   "brand": {
     "tagline":  "Precision Engineering & Project Management",
@@ -118,6 +120,9 @@
     "no_certs":          "Sin certificaciones registradas",
     "no_location":       "Sin historial de proyectos",
     "no_accessories":    "Sin accesorios registrados",
+    "available":         "Disponible",
+    "not_available":     "No Disponible",
+    "qty_available":     "Disponibles",
     "add_to_cart":       "Solicitar Equipo",
     "attachments":       "Documentos adjuntos",
     "videos":            "Videos",
@@ -126,6 +131,25 @@
     "loading":           "Cargando equipo...",
     "error":             "No se pudo cargar el equipo.",
     "ranges":            "Rangos"
+  },
+  "cart": {
+    "title":             "Mi Carrito",
+    "empty":             "Tu carrito está vacío",
+    "empty_cta":         "Ver catálogo",
+    "remove":            "Quitar",
+    "notes_label":       "Notas para la solicitud (opcional)",
+    "notes_placeholder": "Ej: Necesito para proyecto X, entregar en obra...",
+    "submit":            "Enviar solicitud",
+    "submitting":        "Enviando...",
+    "submitted_title":   "¡Solicitud enviada!",
+    "submitted_msg":     "Tu solicitud fue recibida y está pendiente de aprobación.",
+    "go_catalog":        "Seguir viendo catálogo",
+    "add_success":       "Agregado al carrito",
+    "already_in_cart":   "Ya está en el carrito",
+    "login_required":    "Inicia sesión para solicitar equipo",
+    "qty":               "Cantidad",
+    "adding":            "Agregando...",
+    "qty_items":         "{n} equipo en carrito | {n} equipos en carrito"
   },
   "auth": {
     "tab_login":             "Iniciar sesión",
@@ -142,7 +166,15 @@
     "have_account":          "¿Ya tienes cuenta?",
     "no_account":            "¿No tienes cuenta?",
     "switch_to_login":       "Inicia sesión",
-    "switch_to_register":    "Regístrate aquí"
+    "switch_to_register":    "Regístrate aquí",
+    "verify_title":          "Verifica tu correo",
+    "verify_subtitle":       "Enviamos un código de 6 dígitos a",
+    "verify_submit":         "Verificar",
+    "verify_resend":         "Reenviar código",
+    "verify_resend_wait":    "Reenviar en {s}s",
+    "verify_resend_sent":    "¡Código reenviado!",
+    "verify_back":           "Volver al inicio de sesión",
+    "verify_error":          "Código inválido o expirado. Intenta de nuevo."
   },
   "footer": {
     "tagline":    "Soluciones de medición industrial de alta gama y gestión de equipos para líderes globales de la construcción desde 1994.",
@@ -157,7 +189,42 @@
     "link4":      "Galería de Proyectos",
     "legal1":     "Certificación",
     "legal2":     "Política de Privacidad",
-    "copy":       "© 2024 Industrial Precision. Todos los derechos reservados.",
+    "copy":       "© 2026 In Time Control S.A. de C.V. Todos los derechos reservados.",
     "values":     ["Seguridad", "Innovación", "Integridad"]
+  },
+  "requests": {
+    "title":           "Mis Solicitudes",
+    "loading":         "Cargando solicitudes...",
+    "error":           "No se pudieron cargar las solicitudes.",
+    "empty":           "No tienes solicitudes aún",
+    "empty_cta":       "Ver catálogo",
+    "back":            "← Solicitudes",
+    "detail_title":    "Solicitud",
+    "items_label":     "equipo | equipos",
+    "submitted_at":    "Enviada",
+    "created_at":      "Creada",
+    "notes":           "Notas",
+    "no_notes":        "Sin notas",
+    "internal_notes":  "Notas internas",
+    "status_enviada":  "Enviada",
+    "status_aprobada": "Aprobada",
+    "status_rechazada":"Rechazada",
+    "status_pendiente":"Pendiente",
+    "status_cancelada":"Cancelada",
+    "code":            "Código",
+    "name":            "Equipo",
+    "qty":             "Cantidad",
+    "countable":       "Contable",
+    "total":           "{total} solicitudes"
+  },
+  "account": {
+    "title":          "Mi Cuenta",
+    "member_since":   "Miembro desde",
+    "contact":        "Información de contacto",
+    "no_phone":       "Sin teléfono registrado",
+    "quick_links":    "Accesos rápidos",
+    "go_requests":    "Mis solicitudes",
+    "go_catalog":     "Ver catálogo",
+    "loading":        "Cargando perfil..."
   }
 }

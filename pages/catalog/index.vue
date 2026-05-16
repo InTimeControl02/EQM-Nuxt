@@ -1,5 +1,5 @@
 <template>
-  <div class="flex bg-surface">
+  <div class="flex bg-slate-100">
 
     <!-- ── Botón hamburguesa (móvil) ──────────────────────────────── -->
     <button
@@ -133,9 +133,10 @@
 
       <!-- Vista lista -->
       <div v-else class="flex flex-col gap-2 mb-8">
-        <div
+        <NuxtLink
           v-for="item in items"
           :key="item.id"
+          :to="`/catalog/${item.id}`"
           class="bg-surface-container-lowest rounded-xl px-5 py-4 flex items-center gap-5
                  shadow-[0_2px_10px_rgba(7,30,39,0.04)] hover:-translate-y-0.5 transition-all cursor-pointer"
         >
@@ -167,12 +168,22 @@
             </div>
             <p class="text-xs text-slate-500 mt-0.5">{{ item.marca }} · {{ item.modelo }}</p>
           </div>
-          <!-- Código completo -->
+          <!-- Capacidad -->
+          <div v-if="listCapacity(item)" class="shrink-0 hidden lg:flex flex-col items-end gap-0.5 min-w-[90px]">
+            <span class="text-[9px] font-bold text-slate-400 uppercase">{{ t('catalog.capacity') }}</span>
+            <span class="text-xs text-on-surface font-medium">{{ listCapacity(item) }}</span>
+          </div>
+          <!-- Ubicación -->
+          <div class="shrink-0 hidden md:flex flex-col items-end gap-0.5 min-w-[120px]">
+            <span class="text-[9px] font-bold text-slate-400 uppercase">{{ t('catalog.location') }}</span>
+            <span class="text-xs truncate max-w-[140px]" :class="locationClass(item)">{{ locationLabel(item) }}</span>
+          </div>
+          <!-- Código -->
           <div class="shrink-0 hidden sm:flex flex-col items-end gap-0.5">
             <span class="text-[9px] font-bold text-slate-400 uppercase">{{ t('catalog.code') }}</span>
             <span class="font-mono text-xs text-slate-500 tracking-tight">{{ item.codigo }}</span>
           </div>
-        </div>
+        </NuxtLink>
       </div>
 
       <!-- ── Paginación ─────────────────────────────────────────────── -->
@@ -299,7 +310,8 @@ interface Equipment {
   status: string
   cantidad_total: number | null
   cover_image: EquipmentImage | null
-  current_location: { project?: { nombre_proy: string } } | null
+  unidad_medida: string
+  current_location: { project?: { nombre_proy: string; id_itc?: string } } | null
 }
 
 interface PaginatedResponse {
@@ -345,6 +357,25 @@ function listStatusClass(status: string) {
   return LIST_STATUS_MAP[status] ?? 'bg-slate-100 text-slate-600 ring-slate-200'
 }
 
+function locationClass(item: Equipment): string {
+  const idItc = item.current_location?.project?.id_itc
+  if (!idItc) return 'text-slate-400'
+  return idItc === 'G1301' ? 'text-green-600 font-semibold' : 'text-amber-500 font-semibold'
+}
+
+function locationLabel(item: Equipment): string {
+  return item.current_location?.project?.nombre_proy || '—'
+}
+
+function listCapacity(item: Equipment): string | null {
+  const rango = item.capacidad_rango
+  if (!rango || typeof rango !== 'object') return null
+  const vals = Object.values(rango).map((r) => r.valor).filter(Boolean)
+  if (!vals.length) return null
+  const unit = item.unidad_medida || ''
+  return `${vals[0]}${vals[1] ? ' ~ ' + vals[1] : ''} ${unit}`.trim()
+}
+
 function clearSearch() {
   const q = { ...route.query }
   delete q.search
@@ -355,11 +386,8 @@ function clearSearch() {
 // ── Fetch ──────────────────────────────────────────────────────────
 const { apiFetch } = useApi()
 
-const { data: categoriesData } = await useAsyncData<Category[]>(
-  'catalog-categories',
-  () => apiFetch<Category[]>('/eqm/categories', 'public'),
-)
-const allCategories = computed(() => categoriesData.value ?? [])
+const { categories: allCategories, fetchIfNeeded: fetchCategories } = useCategories()
+await fetchCategories()
 
 // Clave dinámica para que useAsyncData re-fetche al cambiar parámetros
 const equipmentKey = computed(() =>

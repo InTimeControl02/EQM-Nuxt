@@ -16,10 +16,146 @@
     <!-- ── Contenido ────────────────────────────────────────────── -->
     <main class="flex-1 min-w-0 px-6 md:px-10 pb-16 pt-6">
 
-      <!-- Loading -->
-      <div v-if="pending" class="flex items-center gap-3 py-24 justify-center text-slate-400">
-        <span class="material-symbols-outlined animate-spin text-3xl">progress_activity</span>
-        <span>{{ t('equipment.loading') }}</span>
+      <!-- ── Skeleton loader ──────────────────────────────────────── -->
+      <div v-if="pending" class="animate-pulse">
+
+        <!-- Breadcrumb skeleton -->
+        <div class="flex items-center gap-2 mb-6">
+          <div class="h-3 w-16 bg-slate-200 rounded-full" />
+          <div class="h-3 w-2 bg-slate-100 rounded-full" />
+          <div class="h-3 w-24 bg-slate-200 rounded-full" />
+          <div class="h-3 w-2 bg-slate-100 rounded-full" />
+          <div class="h-3 w-36 bg-slate-200 rounded-full" />
+        </div>
+
+        <!-- Grid principal -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-10">
+
+          <!-- Columna izquierda (7) -->
+          <div class="lg:col-span-7 flex flex-col gap-6">
+
+            <!-- Título skeleton -->
+            <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-slate-100 flex items-start justify-between gap-4">
+              <div class="flex-1 space-y-3">
+                <div class="flex items-center gap-3">
+                  <div class="h-8 w-56 bg-slate-200 rounded-lg" />
+                  <div class="h-5 w-20 bg-slate-100 rounded-full" />
+                </div>
+                <div class="h-3 w-32 bg-slate-100 rounded-full" />
+                <div class="h-3 w-24 bg-slate-100 rounded-full" />
+              </div>
+              <div class="h-4 w-16 bg-slate-100 rounded-full shrink-0" />
+            </div>
+
+            <!-- Galería skeleton -->
+            <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+              <!-- Tabs -->
+              <div class="flex gap-4 px-4 pt-4 border-b border-surface-container-low pb-3">
+                <div class="h-3 w-20 bg-slate-200 rounded-full" />
+                <div class="h-3 w-24 bg-slate-100 rounded-full" />
+                <div class="h-3 w-16 bg-slate-100 rounded-full" />
+              </div>
+              <!-- Imagen principal -->
+              <div class="mx-4 mt-4 rounded-xl aspect-video bg-slate-100" />
+              <!-- Miniaturas -->
+              <div class="grid grid-cols-5 gap-2 p-4">
+                <div v-for="i in 5" :key="i" class="aspect-square rounded-lg bg-slate-100" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Columna derecha (5) -->
+          <div class="lg:col-span-5 flex flex-col gap-6">
+            <div class="bg-surface-container-lowest rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-5">
+              <!-- Título specs -->
+              <div class="h-5 w-48 bg-slate-200 rounded-lg pb-3 border-b border-surface-container-low" />
+
+              <!-- Filas de especificaciones (6 pares label/valor) -->
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                  <div class="h-2.5 w-10 bg-slate-100 rounded-full" />
+                  <div class="h-4 w-20 bg-slate-200 rounded" />
+                </div>
+                <div class="space-y-1.5">
+                  <div class="h-2.5 w-12 bg-slate-100 rounded-full" />
+                  <div class="h-4 w-24 bg-slate-200 rounded" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                  <div class="h-2.5 w-14 bg-slate-100 rounded-full" />
+                  <div class="h-4 w-28 bg-slate-200 rounded" />
+                </div>
+                <div class="space-y-1.5">
+                  <div class="h-2.5 w-8 bg-slate-100 rounded-full" />
+                  <div class="h-4 w-12 bg-slate-200 rounded" />
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1.5">
+                  <div class="h-2.5 w-16 bg-slate-100 rounded-full" />
+                  <div class="h-4 w-20 bg-slate-200 rounded" />
+                </div>
+                <div class="space-y-1.5">
+                  <div class="h-2.5 w-10 bg-slate-100 rounded-full" />
+                  <div class="h-4 w-16 bg-slate-200 rounded" />
+                </div>
+              </div>
+              <!-- Disponibilidad -->
+              <div class="space-y-1.5">
+                <div class="h-2.5 w-20 bg-slate-100 rounded-full" />
+                <div class="h-5 w-24 bg-slate-200 rounded" />
+              </div>
+              <!-- Descripción -->
+              <div class="space-y-1.5">
+                <div class="h-2.5 w-20 bg-slate-100 rounded-full" />
+                <div class="h-3 w-full bg-slate-100 rounded-full" />
+                <div class="h-3 w-5/6 bg-slate-100 rounded-full" />
+                <div class="h-3 w-4/6 bg-slate-100 rounded-full" />
+              </div>
+
+              <!-- CTA skeleton -->
+              <div class="mt-auto pt-4 flex gap-3">
+                <div class="w-28 h-14 bg-slate-100 rounded-xl" />
+                <div class="flex-1 h-14 bg-slate-200 rounded-xl" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tablas skeleton -->
+        <div class="space-y-8">
+          <!-- Cert table -->
+          <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+            <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between">
+              <div class="h-4 w-40 bg-slate-200 rounded" />
+              <div class="h-3 w-16 bg-slate-100 rounded-full" />
+            </div>
+            <div class="divide-y divide-surface-container-low">
+              <div v-for="i in 2" :key="i" class="px-6 py-4 grid grid-cols-4 gap-4">
+                <div class="h-4 bg-slate-200 rounded" />
+                <div class="h-4 bg-slate-100 rounded" />
+                <div class="h-4 bg-slate-100 rounded" />
+                <div class="h-6 w-12 bg-slate-100 rounded-lg ml-auto" />
+              </div>
+            </div>
+          </div>
+          <!-- Accessories table -->
+          <div class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+            <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between">
+              <div class="h-4 w-36 bg-slate-200 rounded" />
+              <div class="h-3 w-12 bg-slate-100 rounded-full" />
+            </div>
+            <div class="divide-y divide-surface-container-low">
+              <div v-for="i in 2" :key="i" class="px-6 py-4 flex items-center gap-4">
+                <div class="w-10 h-10 rounded-lg bg-slate-100 shrink-0" />
+                <div class="flex-1 h-4 bg-slate-200 rounded" />
+                <div class="w-32 h-4 bg-slate-100 rounded" />
+                <div class="w-8 h-4 bg-slate-100 rounded ml-auto" />
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Error -->
@@ -110,8 +246,17 @@
                   :key="selectedImgIdx"
                   :src="imageUrl(currentTabImages[selectedImgIdx].path)!"
                   :alt="equipmentName"
-                  class="w-full h-full object-contain transition-opacity duration-300"
+                  class="w-full h-full object-contain transition-opacity duration-300 cursor-zoom-in"
+                  @click="openLightbox(currentTabImages, selectedImgIdx)"
                 />
+                <!-- Hint zoom -->
+                <div
+                  v-if="currentTabImages.length"
+                  class="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity
+                         bg-black/50 rounded-lg px-2 py-1 flex items-center gap-1 pointer-events-none"
+                >
+                  <span class="material-symbols-outlined text-white text-sm">zoom_in</span>
+                </div>
                 <div v-else class="w-full h-full flex flex-col items-center justify-center text-slate-300 gap-3">
                   <span class="material-symbols-outlined text-6xl">precision_manufacturing</span>
                   <span class="text-sm">{{ t('equipment.no_image') }}</span>
@@ -184,15 +329,26 @@
                   </div>
                 </div>
 
-                <div v-if="equipment.cantidad_total !== null || equipment.es_contable" class="grid grid-cols-2 gap-4">
-                  <div v-if="equipment.cantidad_total !== null">
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{{ t('equipment.quantity') }}</p>
-                    <p class="text-sm font-semibold text-on-surface">{{ equipment.cantidad_total }}</p>
-                  </div>
-                  <div>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{{ t('equipment.countable') }}</p>
-                    <p class="text-sm font-semibold text-on-surface">{{ equipment.es_contable ? '✓' : '✗' }}</p>
-                  </div>
+                <!-- Disponibilidad -->
+                <div>
+                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
+                    {{ equipment.es_contable ? t('equipment.qty_available') : t('equipment.available') }}
+                  </p>
+                  <!-- Contable: muestra cantidad numérica -->
+                  <p v-if="equipment.es_contable" class="text-sm font-bold text-on-surface">
+                    {{ equipment.cantidad_total ?? '—' }}
+                  </p>
+                  <!-- No contable: Disponible / No Disponible -->
+                  <p
+                    v-else
+                    class="text-sm font-bold flex items-center gap-1.5"
+                    :class="isAvailable ? 'text-green-600' : 'text-red-500'"
+                  >
+                    <span class="material-symbols-outlined text-base">
+                      {{ isAvailable ? 'check_circle' : 'cancel' }}
+                    </span>
+                    {{ isAvailable ? t('equipment.available') : t('equipment.not_available') }}
+                  </p>
                 </div>
 
                 <!-- Ubicación actual -->
@@ -245,15 +401,74 @@
                 </div>
               </div>
 
-              <!-- CTA pegado al fondo -->
-              <button
-                class="mt-6 w-full bg-primary text-white py-4 rounded-xl font-headline font-extrabold
-                       text-base shadow-lg shadow-primary/20 hover:bg-primary-container transition-all
-                       flex items-center justify-center gap-3 hover:scale-[1.01] active:scale-[0.99] mt-auto"
-              >
-                <span class="material-symbols-outlined">shopping_cart</span>
-                {{ t('equipment.add_to_cart') }}
-              </button>
+              <!-- CTA: qty (si es_contable) + botón añadir al carrito -->
+              <div class="mt-auto pt-6 flex flex-col gap-3">
+                <!-- Feedback -->
+                <Transition name="cart-fb">
+                  <div
+                    v-if="cartFeedback"
+                    class="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold"
+                    :class="cartFeedback === 'success'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-amber-100 text-amber-700'"
+                  >
+                    <span class="material-symbols-outlined text-base">
+                      {{ cartFeedback === 'success' ? 'check_circle' : 'info' }}
+                    </span>
+                    {{ cartFeedbackMessage }}
+                  </div>
+                </Transition>
+
+                <div class="flex items-stretch gap-3">
+                  <!-- Qty input (solo si es_contable) -->
+                  <div
+                    v-if="equipment.es_contable"
+                    class="flex items-center rounded-xl border border-slate-200 overflow-hidden shrink-0"
+                  >
+                    <button
+                      class="w-9 flex items-center justify-center text-slate-500
+                             hover:bg-slate-100 transition-colors self-stretch disabled:opacity-40"
+                      :disabled="requestQty <= 1"
+                      @click="requestQty = Math.max(1, requestQty - 1)"
+                    >
+                      <span class="material-symbols-outlined text-base">remove</span>
+                    </button>
+                    <input
+                      v-model.number="requestQty"
+                      type="number"
+                      min="1"
+                      class="w-12 text-center text-sm font-bold text-on-surface bg-white
+                             focus:outline-none border-x border-slate-200 py-2"
+                    />
+                    <button
+                      class="w-9 flex items-center justify-center text-slate-500
+                             hover:bg-slate-100 transition-colors self-stretch"
+                      @click="requestQty++"
+                    >
+                      <span class="material-symbols-outlined text-base">add</span>
+                    </button>
+                  </div>
+
+                  <button
+                    class="flex-1 bg-primary text-white py-4 rounded-xl font-headline font-extrabold
+                           text-base shadow-lg shadow-primary/20 hover:bg-primary-container transition-all
+                           flex items-center justify-center gap-3
+                           hover:scale-[1.01] active:scale-[0.99]
+                           disabled:opacity-50 disabled:scale-100 disabled:cursor-not-allowed
+                           disabled:shadow-none"
+                    :disabled="addingToCart || isCtaDisabled"
+                    @click="handleAddToCart"
+                  >
+                    <span
+                      class="material-symbols-outlined"
+                      :class="{ 'animate-spin': addingToCart }"
+                    >
+                      {{ addingToCart ? 'progress_activity' : 'shopping_cart' }}
+                    </span>
+                    {{ addingToCart ? t('cart.adding') : t('equipment.add_to_cart') }}
+                  </button>
+                </div>
+              </div>
             </div>
 
           </div>
@@ -333,7 +548,8 @@
                           v-if="acc.images?.[0]"
                           :src="imageUrl(acc.images[0].path)!"
                           :alt="locale === 'es' ? acc.nombre_es : acc.nombre_en"
-                          class="w-full h-full object-contain"
+                          class="w-full h-full object-contain cursor-zoom-in hover:opacity-80 transition-opacity"
+                          @click="openLightbox(acc.images, 0)"
                         />
                         <span v-else class="material-symbols-outlined text-slate-300 text-xl">deployed_code</span>
                       </div>
@@ -540,9 +756,88 @@
       </template>
     </main>
   </div>
+
+  <!-- ── Lightbox ────────────────────────────────────────────────── -->
+  <Teleport to="body">
+    <Transition name="lb">
+      <div
+        v-if="lightboxOpen"
+        class="fixed inset-0 z-[9999] bg-black/90 flex items-center justify-center"
+        @click.self="closeLightbox"
+        @keydown.esc="closeLightbox"
+      >
+        <!-- Close -->
+        <button
+          class="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20
+                 flex items-center justify-center text-white transition-colors z-10"
+          @click="closeLightbox"
+        >
+          <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <!-- Counter -->
+        <div class="absolute top-4 left-1/2 -translate-x-1/2 text-white/60 text-sm font-mono">
+          {{ lightboxIdx + 1 }} / {{ lightboxImages.length }}
+        </div>
+
+        <!-- Prev -->
+        <button
+          v-if="lightboxImages.length > 1"
+          class="absolute left-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10
+                 hover:bg-white/25 flex items-center justify-center text-white transition-colors
+                 disabled:opacity-30 disabled:cursor-not-allowed"
+          :disabled="lightboxIdx === 0"
+          @click="lightboxIdx--"
+        >
+          <span class="material-symbols-outlined text-3xl">chevron_left</span>
+        </button>
+
+        <!-- Image -->
+        <div class="max-w-[90vw] max-h-[85vh] flex items-center justify-center px-16">
+          <img
+            :key="lightboxIdx"
+            :src="imageUrl(lightboxImages[lightboxIdx]?.path)!"
+            class="max-w-full max-h-[85vh] object-contain rounded-xl shadow-2xl select-none"
+            draggable="false"
+          />
+        </div>
+
+        <!-- Next -->
+        <button
+          v-if="lightboxImages.length > 1"
+          class="absolute right-3 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-white/10
+                 hover:bg-white/25 flex items-center justify-center text-white transition-colors
+                 disabled:opacity-30 disabled:cursor-not-allowed"
+          :disabled="lightboxIdx === lightboxImages.length - 1"
+          @click="lightboxIdx++"
+        >
+          <span class="material-symbols-outlined text-3xl">chevron_right</span>
+        </button>
+
+        <!-- Thumbnail strip (si hay más de 1) -->
+        <div
+          v-if="lightboxImages.length > 1"
+          class="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 max-w-[90vw] overflow-x-auto px-2"
+        >
+          <button
+            v-for="(img, i) in lightboxImages"
+            :key="img.id"
+            class="w-12 h-12 shrink-0 rounded-lg overflow-hidden border-2 transition-all"
+            :class="lightboxIdx === i ? 'border-white' : 'border-white/20 hover:border-white/50'"
+            @click="lightboxIdx = i"
+          >
+            <img :src="imageUrl(img.path)!" class="w-full h-full object-contain bg-white/10" />
+          </button>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
+import { useAuthStore } from '~/stores/auth'
+import { useCartStore } from '~/stores/cart'
+
 // ── Tipos ──────────────────────────────────────────────────────────
 interface Category {
   id: number; id_padre: number | null; codigo: string
@@ -578,7 +873,7 @@ interface CertHistory {
 interface LocationEntry {
   id: number; fecha_entrega: string; fecha_devolucion: string | null
   condicion_entrega: string; condicion_regreso: string | null
-  project: { id: number; nombre_proy: string; ciudad: string; estado: string; pais: string } | null
+  project: { id: number; nombre_proy: string; ciudad: string; estado: string; pais: string; id_itc?: string } | null
   worker: { id: number; nombre_trabajador: string } | null
 }
 
@@ -598,22 +893,57 @@ interface Equipment {
 }
 
 const { t, locale } = useI18n({ useScope: 'global' })
-const route  = useRoute()
-const router = useRouter()
+const route     = useRoute()
+const router    = useRouter()
+const auth      = useAuthStore()
+const cartStore = useCartStore()
+const authModal = useAuthModal()
 const { apiFetch } = useApi()
 const { imageUrl } = useImageUrl()
 
+// ── Carrito ─────────────────────────────────────────────────────────
+const requestQty        = ref(1)
+const addingToCart      = ref(false)
+const cartFeedback      = ref<'success' | 'warn' | null>(null)
+const cartFeedbackMessage = ref('')
+let cartFeedbackTimer: ReturnType<typeof setTimeout> | null = null
+
+async function handleAddToCart() {
+  if (!auth.isAuthenticated) {
+    authModal.open('login')
+    return
+  }
+  if (!equipment.value) return
+
+  addingToCart.value = true
+  const qty = equipment.value.es_contable ? requestQty.value : undefined
+  const result = await cartStore.addItem(equipment.value.id, qty)
+  addingToCart.value = false
+
+  if (result.success) {
+    cartFeedback.value        = 'success'
+    cartFeedbackMessage.value = t('cart.add_success')
+  } else {
+    cartFeedback.value        = 'warn'
+    cartFeedbackMessage.value = result.message ?? t('cart.already_in_cart')
+    // Si hay stock insuficiente, ajustar qty al disponible
+    if ('disponible' in result && result.disponible !== undefined) {
+      requestQty.value = result.disponible
+    }
+  }
+
+  if (cartFeedbackTimer) clearTimeout(cartFeedbackTimer)
+  cartFeedbackTimer = setTimeout(() => { cartFeedback.value = null }, 3000)
+}
+
 const id = computed(() => route.params.id as string)
 
-// ── Fetch categorías (sidebar) ────────────────────────────────────
-const { data: categoriesData } = await useAsyncData<Category[]>(
-  'catalog-categories',
-  () => apiFetch<Category[]>('/eqm/categories', 'public'),
-)
-const allCategories = computed(() => categoriesData.value ?? [])
+// ── Categorías (cache global, no re-fetch) ─────────────────────────
+const { categories: allCategories, fetchIfNeeded: fetchCategories } = useCategories()
+await fetchCategories()
 
 // ── Fetch equipo detalle ──────────────────────────────────────────
-const { data: equipment, pending, error } = await useAsyncData<Equipment>(
+const { data: equipment, pending, error } = useAsyncData<Equipment>(
   `equipment-${id.value}`,
   () => apiFetch<Equipment>(`/eqm/equipment/${id.value}`, 'public'),
 )
@@ -622,7 +952,7 @@ const { data: equipment, pending, error } = await useAsyncData<Equipment>(
 interface LocationResponse {
   data: LocationEntry[]
 }
-const { data: locationsData } = await useAsyncData<LocationResponse>(
+const { data: locationsData } = useAsyncData<LocationResponse>(
   `locations-${id.value}`,
   () => apiFetch<LocationResponse>(`/eqm/locations`, 'public', {
     params: { equipment_id: id.value },
@@ -636,11 +966,24 @@ const currentLocation = computed(() => {
   return locs.find(l => !l.fecha_devolucion) || locs[locs.length - 1]
 })
 
+// Disponibilidad: en oficina central (G1301) o sin historial → disponible
+const isAvailable = computed(() => {
+  const loc = currentLocation.value
+  if (!loc) return true                           // sin historial → en oficina
+  if (loc.fecha_devolucion) return true           // ya fue devuelto → en oficina
+  return loc.project?.id_itc === 'G1301'          // en uso: disponible solo si es G1301
+})
+
+// CTA deshabilitado para no-contables no disponibles
+const isCtaDisabled = computed(() =>
+  !equipment.value?.es_contable && !isAvailable.value,
+)
+
 // ── Fetch historial de certificaciones ────────────────────────────
 interface CertResponse {
   data: CertHistory[]
 }
-const { data: certsData } = await useAsyncData<CertResponse>(
+const { data: certsData } = useAsyncData<CertResponse>(
   `certifications-${id.value}`,
   () => apiFetch<CertResponse>(`/eqm/certifications`, 'public', {
     params: { equipment_id: id.value },
@@ -777,6 +1120,29 @@ watch(locationPageSize, () => {
   locationCurrentPage.value = 1
 })
 
+// ── Lightbox ───────────────────────────────────────────────────────
+const lightboxOpen   = ref(false)
+const lightboxImages = ref<EquipmentImage[]>([])
+const lightboxIdx    = ref(0)
+
+function openLightbox(images: EquipmentImage[], idx: number) {
+  if (!images.length) return
+  lightboxImages.value = images
+  lightboxIdx.value    = idx
+  lightboxOpen.value   = true
+}
+function closeLightbox() { lightboxOpen.value = false }
+
+function onKeydown(e: KeyboardEvent) {
+  if (!lightboxOpen.value) return
+  if (e.key === 'Escape')      closeLightbox()
+  if (e.key === 'ArrowRight')  lightboxIdx.value = Math.min(lightboxIdx.value + 1, lightboxImages.value.length - 1)
+  if (e.key === 'ArrowLeft')   lightboxIdx.value = Math.max(lightboxIdx.value - 1, 0)
+}
+
+onMounted(()   => document.addEventListener('keydown', onKeydown))
+onUnmounted(() => document.removeEventListener('keydown', onKeydown))
+
 // ── Videos ────────────────────────────────────────────────────────
 const playingVideos = ref<Set<number>>(new Set())
 
@@ -810,4 +1176,10 @@ useHead({
 <style scoped>
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+.cart-fb-enter-active, .cart-fb-leave-active { transition: opacity .25s, transform .25s; }
+.cart-fb-enter-from, .cart-fb-leave-to { opacity: 0; transform: translateY(-6px); }
+
+.lb-enter-active, .lb-leave-active { transition: opacity .2s ease; }
+.lb-enter-from, .lb-leave-to { opacity: 0; }
 </style>
