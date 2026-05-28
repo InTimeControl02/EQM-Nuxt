@@ -219,6 +219,29 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async updateProfile(data: { nombre: string; telefono?: string | null }) {
+      if (!this.token) return { success: false as const }
+      const config = useRuntimeConfig()
+      try {
+        const user = await $fetch<AuthUser>(`${config.public.apiBase}/eqm/auth/profile`, {
+          method: 'PUT',
+          headers: {
+            Authorization: `Bearer ${this.token}`,
+            Accept: 'application/json',
+          },
+          body: data,
+        })
+        this.user = user
+        return { success: true as const }
+      } catch (err: any) {
+        return {
+          success: false as const,
+          errors:  err?.data?.errors  as Record<string, string[]> | undefined,
+          message: err?.data?.message as string | undefined,
+        }
+      }
+    },
+
     hydrate() {
       if (!import.meta.client) return
       const token = localStorage.getItem(TOKEN_KEY)

@@ -39,10 +39,57 @@
           </div>
 
           <!-- Info -->
-          <div class="pt-12 pb-6 px-6">
+          <div class="pt-12 pb-6 px-6 relative">
+            <!-- Botones edición (top-right) -->
+            <div class="absolute top-3 right-4 flex items-center gap-1">
+              <template v-if="!editing">
+                <button
+                  class="w-8 h-8 rounded-lg flex items-center justify-center
+                         text-slate-400 hover:text-primary hover:bg-primary/10 transition-colors"
+                  :title="t('account.edit')"
+                  @click="startEdit"
+                >
+                  <span class="material-symbols-outlined text-lg">edit</span>
+                </button>
+              </template>
+              <template v-else>
+                <button
+                  class="w-8 h-8 rounded-lg flex items-center justify-center
+                         text-primary hover:bg-primary/10 transition-colors
+                         disabled:opacity-40 disabled:cursor-not-allowed"
+                  :disabled="saving"
+                  :title="t('account.save')"
+                  @click="saveEdit"
+                >
+                  <span class="material-symbols-outlined text-lg" :class="{ 'animate-spin': saving }">
+                    {{ saving ? 'progress_activity' : 'check' }}
+                  </span>
+                </button>
+                <button
+                  class="w-8 h-8 rounded-lg flex items-center justify-center
+                         text-slate-400 hover:text-on-surface hover:bg-surface-container-low transition-colors"
+                  :title="t('account.cancel')"
+                  @click="cancelEdit"
+                >
+                  <span class="material-symbols-outlined text-lg">close</span>
+                </button>
+              </template>
+            </div>
+
             <div class="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <h2 class="text-xl font-headline font-bold text-on-surface">{{ auth.userName }}</h2>
+                <!-- Nombre: texto o input -->
+                <h2 v-if="!editing" class="text-xl font-headline font-bold text-on-surface">
+                  {{ auth.userName }}
+                </h2>
+                <input
+                  v-else
+                  v-model="editNombre"
+                  type="text"
+                  class="text-xl font-headline font-bold text-on-surface bg-surface-container-low
+                         rounded-lg px-3 py-1 focus:outline-none
+                         focus:ring-2 focus:ring-primary/30 w-64"
+                />
                 <p class="text-xs text-slate-400 uppercase font-bold tracking-wider mt-1">
                   {{ auth.userRole }}
                 </p>
@@ -58,9 +105,19 @@
 
         <!-- ── Información de contacto ───────────────────────────── -->
         <div class="bg-surface-container-lowest rounded-2xl p-6 border border-slate-100 shadow-sm mb-6">
-          <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">
-            {{ t('account.contact') }}
-          </h3>
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest">
+              {{ t('account.contact') }}
+            </h3>
+          </div>
+
+          <!-- Error de guardado -->
+          <Transition name="fade-quick">
+            <p v-if="saveError" class="text-xs text-red-500 mb-3 flex items-center gap-1">
+              <span class="material-symbols-outlined text-sm">error</span>
+              {{ saveError }}
+            </p>
+          </Transition>
 
           <div class="space-y-4">
             <!-- Correo -->
@@ -81,21 +138,22 @@
             <!-- Teléfono -->
             <div class="flex items-center gap-4">
               <div
-                class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0"
-                :class="auth.user?.telefono ? 'bg-primary/10' : 'bg-slate-100'"
+                class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-colors"
+                :class="(editing || auth.user?.telefono) ? 'bg-primary/10' : 'bg-slate-100'"
               >
                 <span
-                  class="material-symbols-outlined text-lg"
-                  :class="auth.user?.telefono ? 'text-primary' : 'text-slate-300'"
+                  class="material-symbols-outlined text-lg transition-colors"
+                  :class="(editing || auth.user?.telefono) ? 'text-primary' : 'text-slate-300'"
                 >
                   phone
                 </span>
               </div>
-              <div>
+              <div class="flex-1 min-w-0">
                 <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   {{ t('auth.telefono') }}
                 </p>
                 <p
+                  v-if="!editing"
                   class="text-sm mt-0.5"
                   :class="auth.user?.telefono
                     ? 'font-semibold text-on-surface'
@@ -103,6 +161,15 @@
                 >
                   {{ auth.user?.telefono || t('account.no_phone') }}
                 </p>
+                <input
+                  v-else
+                  v-model="editTelefono"
+                  type="tel"
+                  :placeholder="t('account.no_phone')"
+                  class="text-sm font-semibold text-on-surface bg-surface-container-low mt-0.5
+                         rounded-lg px-3 py-1 w-full max-w-xs
+                         focus:outline-none focus:ring-2 focus:ring-primary/30"
+                />
               </div>
             </div>
           </div>
@@ -185,6 +252,42 @@ const auth      = useAuthStore()
 const cartStore = useCartStore()
 const authModal = useAuthModal()
 
+// ── Edición de perfil ──────────────────────────────────────────────
+const editing     = ref(false)
+const saving      = ref(false)
+const saveError   = ref('')
+const editNombre   = ref('')
+const editTelefono = ref('')
+
+function startEdit() {
+  editNombre.value   = auth.user?.nombre   ?? ''
+  editTelefono.value = auth.user?.telefono ?? ''
+  saveError.value    = ''
+  editing.value      = true
+}
+
+function cancelEdit() {
+  editing.value   = false
+  saveError.value = ''
+}
+
+async function saveEdit() {
+  if (!editNombre.value.trim()) return
+  saving.value    = true
+  saveError.value = ''
+  const result = await auth.updateProfile({
+    nombre:   editNombre.value.trim(),
+    telefono: editTelefono.value.trim() || null,
+  })
+  saving.value = false
+  if (result.success) {
+    editing.value = false
+  } else {
+    saveError.value = result.message ?? Object.values(result.errors ?? {})[0]?.[0] ?? 'Error al guardar'
+  }
+}
+
+// ── Utilidades ────────────────────────────────────────────────────
 function fmtDate(iso: string | null | undefined): string {
   if (!iso) return '—'
   return new Date(iso).toLocaleDateString(locale.value === 'es' ? 'es-MX' : 'en-US', {
@@ -194,3 +297,8 @@ function fmtDate(iso: string | null | undefined): string {
 
 useHead({ title: () => `${t('account.title')} — Intime Control` })
 </script>
+
+<style scoped>
+.fade-quick-enter-active, .fade-quick-leave-active { transition: opacity .2s; }
+.fade-quick-enter-from, .fade-quick-leave-to { opacity: 0; }
+</style>

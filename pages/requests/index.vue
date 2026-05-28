@@ -96,8 +96,7 @@
                       </span>
                     </div>
                     <p class="text-sm text-slate-400 mt-1">
-                      {{ sol.items.length }}
-                      {{ sol.items.length === 1 ? t('requests.items_label').split('|')[0].trim() : t('requests.items_label').split('|')[1].trim() }}
+                      {{ itemsLabel(sol.items?.length ?? 0) }}
                       ·
                       {{ fmtDate(sol.submitted_at ?? sol.created_at) }}
                     </p>
@@ -114,7 +113,7 @@
               </div>
 
               <!-- Preview de items (máx 3) -->
-              <div v-if="sol.items.length" class="mt-3 flex flex-wrap gap-2">
+              <div v-if="sol.items?.length" class="mt-3 flex flex-wrap gap-2">
                 <span
                   v-for="item in sol.items.slice(0, 3)"
                   :key="item.id"
@@ -123,7 +122,7 @@
                   {{ item.codigo_snapshot }}
                 </span>
                 <span
-                  v-if="sol.items.length > 3"
+                  v-if="(sol.items?.length ?? 0) > 3"
                   class="px-2 py-0.5 rounded-lg bg-surface-container text-[11px] text-slate-400"
                 >
                   +{{ sol.items.length - 3 }}
@@ -223,8 +222,16 @@ const { data: response, pending, error } = await useAsyncData<SolicitudesRespons
         params: { page: currentPage.value },
       })
     : Promise.resolve(null as any),
-  { server: false, watch: [currentPage] },
+  { server: false, watch: [currentPage, () => auth.isAuthenticated] },
 )
+
+function itemsLabel(count: number): string {
+  const raw   = t('requests.items_label') ?? ''
+  const parts = raw.split('|')
+  const sing  = parts[0]?.trim() ?? ''
+  const plur  = parts[1]?.trim() ?? sing
+  return `${count} ${count === 1 ? sing : plur}`
+}
 
 function goToPage(page: number) {
   router.push({ query: { ...route.query, page } })

@@ -80,12 +80,7 @@
             <h2 class="text-base font-headline font-bold text-primary">
               {{ t('equipment.accessories') !== '' ? t('catalog.title') : 'Equipos' }}
             </h2>
-            <span class="text-xs text-slate-400">
-              {{ solicitud.items.length }}
-              {{ solicitud.items.length === 1
-                ? t('requests.items_label').split('|')[0].trim()
-                : t('requests.items_label').split('|')[1].trim() }}
-            </span>
+            <span class="text-xs text-slate-400">{{ itemsLabel(solicitud.items?.length ?? 0) }}</span>
           </div>
 
           <div class="overflow-x-auto">
@@ -198,7 +193,7 @@ const { data: solicitud, pending, error } = await useAsyncData<Solicitud>(
   () => auth.isAuthenticated
     ? apiFetch<Solicitud>(`/eqm/solicitudes/${id.value}`, 'user')
     : Promise.resolve(null as any),
-  { server: false },
+  { server: false, watch: [() => auth.isAuthenticated] },
 )
 
 // ── Status helpers ────────────────────────────────────────────────
@@ -215,6 +210,13 @@ function statusClass(s: string) {
 }
 function statusLabel(s: string) {
   return t(`requests.status_${s}` as any) || s
+}
+
+function itemsLabel(count: number): string {
+  const parts = (t('requests.items_label') ?? '').split('|')
+  const sing  = parts[0]?.trim() ?? ''
+  const plur  = parts[1]?.trim() ?? sing
+  return `${count} ${count === 1 ? sing : plur}`
 }
 
 function fmtDate(iso: string | null | undefined): string {

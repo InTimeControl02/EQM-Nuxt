@@ -225,6 +225,9 @@
     "quick_links":    "Quick access",
     "go_requests":    "My requests",
     "go_catalog":     "Browse catalog",
-    "loading":        "Loading profile..."
+    "loading":        "Loading profile...",
+    "edit":           "Edit profile",
+    "save":           "Save changes",
+    "cancel":         "Cancel editing"
   }
 }
