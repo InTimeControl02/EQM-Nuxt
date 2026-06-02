@@ -173,9 +173,11 @@
             <span class="text-[9px] font-bold text-slate-400 uppercase">{{ t('catalog.capacity') }}</span>
             <span class="text-xs text-on-surface font-medium">{{ listCapacity(item) }}</span>
           </div>
-          <!-- Ubicación -->
+          <!-- Ubicación / Disponibilidad -->
           <div class="shrink-0 hidden md:flex flex-col items-end gap-0.5 min-w-[120px]">
-            <span class="text-[9px] font-bold text-slate-400 uppercase">{{ t('catalog.location') }}</span>
+            <span class="text-[9px] font-bold text-slate-400 uppercase">
+              {{ item.es_contable ? t('equipment.qty_available') : t('catalog.location') }}
+            </span>
             <span class="text-xs truncate max-w-[140px]" :class="locationClass(item)">{{ locationLabel(item) }}</span>
           </div>
           <!-- Código -->
@@ -308,9 +310,12 @@ interface Equipment {
   capacidad_rango: Record<string, { valor: string; codigo: string }> | null
   unidad_medida: string
   status: string
+  es_contable: boolean
   cantidad_total: number | null
+  inventario?: number | null
+  disponible?: number | null
+  en_campo?: number | null
   cover_image: EquipmentImage | null
-  unidad_medida: string
   current_location: { project?: { nombre_proy: string; id_itc?: string } } | null
 }
 
@@ -358,12 +363,23 @@ function listStatusClass(status: string) {
 }
 
 function locationClass(item: Equipment): string {
+  if (item.es_contable) {
+    return (item.disponible ?? 0) > 0 ? 'text-green-600 font-semibold' : 'text-slate-400 font-semibold'
+  }
+  if (item.disponible !== undefined && item.disponible !== null) {
+    return item.disponible > 0 ? 'text-green-600 font-semibold' : 'text-slate-400'
+  }
   const idItc = item.current_location?.project?.id_itc
   if (!idItc) return 'text-slate-400'
   return idItc === 'G1301' ? 'text-green-600 font-semibold' : 'text-amber-500 font-semibold'
 }
 
 function locationLabel(item: Equipment): string {
+  if (item.es_contable) {
+    const disp  = item.disponible  ?? 0
+    const total = item.cantidad_total ?? 0
+    return `${disp} / ${total}`
+  }
   return item.current_location?.project?.nombre_proy || '—'
 }
 

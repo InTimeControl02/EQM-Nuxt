@@ -329,18 +329,48 @@
                   </div>
                 </div>
 
-                <!-- Disponibilidad -->
-                <div>
+                <!-- Disponibilidad: contable -->
+                <div v-if="equipment.es_contable">
+                  <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+                    {{ t('equipment.available') }}
+                  </p>
+                  <div class="grid grid-cols-2 gap-2">
+                    <div
+                      class="rounded-xl px-3 py-2 text-center"
+                      :class="disponibleCount > 0 ? 'bg-green-50' : 'bg-slate-50'"
+                    >
+                      <p class="text-[9px] font-bold uppercase tracking-wider mb-0.5"
+                         :class="disponibleCount > 0 ? 'text-green-600' : 'text-slate-400'">
+                        {{ t('equipment.qty_available') }}
+                      </p>
+                      <p class="text-lg font-extrabold"
+                         :class="disponibleCount > 0 ? 'text-green-600' : 'text-slate-300'">
+                        {{ disponibleCount }}
+                      </p>
+                    </div>
+                    <div class="rounded-xl px-3 py-2 text-center"
+                         :class="enCampoCount > 0 ? 'bg-amber-50' : 'bg-slate-50'">
+                      <p class="text-[9px] font-bold uppercase tracking-wider mb-0.5"
+                         :class="enCampoCount > 0 ? 'text-amber-500' : 'text-slate-400'">
+                        {{ t('equipment.in_field') }}
+                      </p>
+                      <p class="text-lg font-extrabold"
+                         :class="enCampoCount > 0 ? 'text-amber-500' : 'text-slate-300'">
+                        {{ enCampoCount }}
+                      </p>
+                    </div>
+                  </div>
+                  <p class="text-[10px] text-slate-400 text-center mt-1">
+                    {{ t('equipment.quantity') }}: {{ equipment.cantidad_total ?? '—' }}
+                  </p>
+                </div>
+
+                <!-- Disponibilidad: no contable -->
+                <div v-else>
                   <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
-                    {{ equipment.es_contable ? t('equipment.qty_available') : t('equipment.available') }}
+                    {{ t('equipment.available') }}
                   </p>
-                  <!-- Contable: muestra cantidad numérica -->
-                  <p v-if="equipment.es_contable" class="text-sm font-bold text-on-surface">
-                    {{ equipment.cantidad_total ?? '—' }}
-                  </p>
-                  <!-- No contable: Disponible / No Disponible -->
                   <p
-                    v-else
                     class="text-sm font-bold flex items-center gap-1.5"
                     :class="isAvailable ? 'text-green-600' : 'text-red-500'"
                   >
@@ -351,8 +381,8 @@
                   </p>
                 </div>
 
-                <!-- Ubicación actual -->
-                <div v-if="currentLocation?.project">
+                <!-- Ubicación actual: no contable -->
+                <div v-if="!equipment.es_contable && currentLocation?.project">
                   <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{{ t('equipment.project') }}</p>
                   <p class="text-sm font-semibold text-primary">{{ currentLocation.project.nombre_proy }}</p>
                   <p class="text-xs text-slate-400">
@@ -437,13 +467,16 @@
                       v-model.number="requestQty"
                       type="number"
                       min="1"
+                      :max="disponibleCount"
                       class="w-12 text-center text-sm font-bold text-on-surface bg-white
                              focus:outline-none border-x border-slate-200 py-2"
+                      @change="requestQty = Math.min(Math.max(1, requestQty), disponibleCount)"
                     />
                     <button
                       class="w-9 flex items-center justify-center text-slate-500
-                             hover:bg-slate-100 transition-colors self-stretch"
-                      @click="requestQty++"
+                             hover:bg-slate-100 transition-colors self-stretch disabled:opacity-40"
+                      :disabled="requestQty >= disponibleCount"
+                      @click="requestQty = Math.min(requestQty + 1, disponibleCount)"
                     >
                       <span class="material-symbols-outlined text-base">add</span>
                     </button>
@@ -569,8 +602,46 @@
             </div>
           </div>
 
-          <!-- Historial de ubicaciones (expandible con paginación) -->
-          <div v-if="locationHistory.length" class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+          <!-- Ubicaciones activas: solo equipos contables -->
+          <div v-if="equipment.es_contable && activeLocations.length" class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+            <div class="px-6 py-4 bg-surface-container-low flex items-center justify-between">
+              <h3 class="text-base font-headline font-bold text-primary">{{ t('equipment.project') }}</h3>
+              <span class="text-xs text-slate-400">{{ activeLocations.length }} registros</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr class="border-b border-surface-container-low">
+                    <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase">{{ t('equipment.project') }}</th>
+                    <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase">{{ t('equipment.worker') }}</th>
+                    <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase">{{ t('equipment.delivery_date') }}</th>
+                    <th class="px-6 py-3 text-[10px] font-bold text-slate-400 uppercase text-right">{{ t('catalog.qty') }}</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-surface-container-low">
+                  <tr v-for="loc in activeLocations" :key="loc.id">
+                    <td class="px-6 py-4">
+                      <p class="text-sm font-semibold" :class="loc.project?.id_itc === 'G1301' ? 'text-green-600' : 'text-amber-500'">
+                        {{ loc.project?.nombre_proy ?? '—' }}
+                      </p>
+                      <span v-if="loc.project" class="text-[11px] text-slate-400">
+                        {{ loc.project.ciudad }}, {{ loc.project.estado }}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-on-surface">{{ loc.worker?.nombre_trabajador ?? '—' }}</td>
+                    <td class="px-6 py-4 text-sm text-on-surface">{{ fmtDate(loc.fecha_entrega) }}</td>
+                    <td class="px-6 py-4 text-right text-sm font-bold"
+                        :class="loc.project?.id_itc === 'G1301' ? 'text-green-600' : 'text-amber-500'">
+                      {{ loc.cantidad ?? 1 }}
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Historial de ubicaciones (expandible con paginación): solo no contables -->
+          <div v-if="!equipment.es_contable && locationHistory.length" class="bg-surface-container-lowest rounded-2xl overflow-hidden shadow-sm border border-slate-100">
             <!-- Header expandible -->
             <div
               class="px-6 py-4 bg-surface-container-low flex items-center justify-between cursor-pointer
@@ -872,6 +943,7 @@ interface CertHistory {
 
 interface LocationEntry {
   id: number; fecha_entrega: string; fecha_devolucion: string | null
+  cantidad: number | null
   condicion_entrega: string; condicion_regreso: string | null
   project: { id: number; nombre_proy: string; ciudad: string; estado: string; pais: string; id_itc?: string } | null
   worker: { id: number; nombre_trabajador: string } | null
@@ -884,6 +956,7 @@ interface Equipment {
   marca: string; modelo: string; numero_serie: string; anio_fabricacion: number
   capacidad_rango: Record<string, { valor: string | number; codigo?: string; unidad?: string }> | string | null
   unidad_medida: string; status: string; es_contable: boolean; cantidad_total: number | null
+  inventario?: number | null; disponible?: number | null; en_campo?: number | null
   category: Category & { parent?: Category } | null
   cover_image: EquipmentImage | null
   images: EquipmentImage[]
@@ -916,7 +989,9 @@ async function handleAddToCart() {
   if (!equipment.value) return
 
   addingToCart.value = true
-  const qty = equipment.value.es_contable ? requestQty.value : undefined
+  const qty = equipment.value.es_contable
+    ? Math.min(requestQty.value, disponibleCount.value)
+    : undefined
   const result = await cartStore.addItem(equipment.value.id, qty)
   addingToCart.value = false
 
@@ -959,25 +1034,51 @@ const { data: locationsData } = useAsyncData<LocationResponse>(
   }),
 )
 const locationHistory = computed(() => locationsData.value?.data ?? [])
-const currentLocation = computed(() => {
-  const locs = locationHistory.value
-  if (!locs.length) return null
-  // Busca ubicación sin devolución (en uso) o la más reciente
-  return locs.find(l => !l.fecha_devolucion) || locs[locs.length - 1]
-})
 
-// Disponibilidad: en oficina central (G1301) o sin historial → disponible
-const isAvailable = computed(() => {
-  const loc = currentLocation.value
-  if (!loc) return true                           // sin historial → en oficina
-  if (loc.fecha_devolucion) return true           // ya fue devuelto → en oficina
-  return loc.project?.id_itc === 'G1301'          // en uso: disponible solo si es G1301
-})
-
-// CTA deshabilitado para no-contables no disponibles
-const isCtaDisabled = computed(() =>
-  !equipment.value?.es_contable && !isAvailable.value,
+// Ubicaciones activas = sin fecha de devolución
+const activeLocations = computed(() =>
+  locationHistory.value.filter(l => !l.fecha_devolucion),
 )
+
+// Para no-contable: ubicación activa o última registrada (display en specs)
+const currentLocation = computed(() => {
+  return activeLocations.value[0]
+    ?? locationHistory.value[locationHistory.value.length - 1]
+    ?? null
+})
+
+// Unidades en oficina — usa campo API si está disponible, sino calcula desde historial
+const disponibleCount = computed(() => {
+  if (equipment.value?.disponible !== undefined && equipment.value?.disponible !== null) {
+    return equipment.value.disponible
+  }
+  // fallback: calcular desde locationHistory (puede diferir si el endpoint pagina)
+  if (!equipment.value?.es_contable) {
+    return activeLocations.value.some(l => l.project?.id_itc === 'G1301') ? 1 : 0
+  }
+  return activeLocations.value
+    .filter(l => l.project?.id_itc === 'G1301')
+    .reduce((s, l) => s + (l.cantidad ?? 1), 0)
+})
+
+// Unidades en campo — usa campo API si está disponible, sino calcula desde historial
+const enCampoCount = computed(() => {
+  if (equipment.value?.en_campo !== undefined && equipment.value?.en_campo !== null) {
+    return equipment.value.en_campo
+  }
+  // fallback
+  if (!equipment.value?.es_contable) {
+    return activeLocations.value.some(l => l.project?.id_itc !== 'G1301') ? 1 : 0
+  }
+  return activeLocations.value
+    .filter(l => l.project?.id_itc !== 'G1301')
+    .reduce((s, l) => s + (l.cantidad ?? 1), 0)
+})
+
+const isAvailable = computed(() => disponibleCount.value > 0)
+
+// CTA deshabilitado si no hay unidades disponibles en oficina
+const isCtaDisabled = computed(() => disponibleCount.value === 0)
 
 // ── Fetch historial de certificaciones ────────────────────────────
 interface CertResponse {

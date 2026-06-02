@@ -123,6 +123,7 @@
     "available":         "Available",
     "not_available":     "Not Available",
     "qty_available":     "Available",
+    "in_field":          "In Field",
     "add_to_cart":       "Request Equipment",
     "attachments":       "Attached documents",
     "videos":            "Videos",

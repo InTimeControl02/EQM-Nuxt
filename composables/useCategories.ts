@@ -20,12 +20,15 @@ export function useCategories() {
   const { apiFetch } = useApi()
 
   async function fetchIfNeeded() {
+    if (!import.meta.client) return   // API solo accesible desde cliente
     if (loaded.value || loading.value) return
     loading.value = true
     try {
       const data = await apiFetch<Category[]>('/eqm/categories', 'public')
       categories.value = data ?? []
       loaded.value     = true
+    } catch {
+      // silencioso — sidebar queda vacío, no rompe el setup
     } finally {
       loading.value = false
     }

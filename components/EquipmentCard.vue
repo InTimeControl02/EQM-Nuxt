@@ -43,7 +43,9 @@
           <span class="font-medium text-on-surface">{{ equipment.modelo || '—' }}</span>
         </div>
         <div class="flex justify-between border-b border-slate-50 pb-1">
-          <span class="text-[10px] font-bold text-slate-400 uppercase">{{ t('catalog.location') }}</span>
+          <span class="text-[10px] font-bold text-slate-400 uppercase">
+            {{ equipment.es_contable ? t('equipment.qty_available') : t('catalog.location') }}
+          </span>
           <span class="font-medium text-right truncate max-w-[55%]" :class="locationClass">{{ locationLabel }}</span>
         </div>
         <div class="flex flex-col gap-0.5 border-b border-slate-50 pb-1">
@@ -89,7 +91,11 @@ interface Equipment {
   capacidad_rango: CapacidadRango | null
   unidad_medida: string
   status: string
+  es_contable: boolean
   cantidad_total: number | null
+  inventario?: number | null
+  disponible?: number | null
+  en_campo?: number | null
   cover_image: EquipmentImage | null
   current_location: EquipmentLocation | null
 }
@@ -106,11 +112,27 @@ const name = computed(() =>
 const imgError = ref(false)
 const coverUrl = computed(() => imageUrl(props.equipment.cover_image?.path))
 
-const locationLabel = computed(() =>
-  props.equipment.current_location?.project?.nombre_proy || '—',
-)
+const locationLabel = computed(() => {
+  if (props.equipment.es_contable) {
+    const disp  = props.equipment.disponible  ?? 0
+    const total = props.equipment.cantidad_total ?? 0
+    return `${disp} / ${total}`
+  }
+  return props.equipment.current_location?.project?.nombre_proy || '—'
+})
 
 const locationClass = computed(() => {
+  if (props.equipment.es_contable) {
+    return (props.equipment.disponible ?? 0) > 0
+      ? 'text-green-600 font-semibold'
+      : 'text-slate-400 font-semibold'
+  }
+  // No contable: usa campo disponible si existe, sino fallback a id_itc
+  if (props.equipment.disponible !== undefined && props.equipment.disponible !== null) {
+    return props.equipment.disponible > 0
+      ? 'text-green-600 font-semibold'
+      : 'text-slate-400'
+  }
   const idItc = props.equipment.current_location?.project?.id_itc
   if (!idItc) return 'text-on-surface'
   return idItc === 'G1301' ? 'text-green-600 font-semibold' : 'text-amber-500 font-semibold'
