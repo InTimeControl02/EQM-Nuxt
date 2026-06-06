@@ -101,6 +101,31 @@
             </span>
           </div>
 
+          <!-- Filtro contable -->
+          <div class="flex items-center bg-surface-container-low p-1 rounded-lg">
+            <button
+              class="px-3 py-2 rounded-md text-xs font-semibold transition-all"
+              :class="selectedContable === null ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              @click="onContableSelect(null)"
+            >{{ t('catalog.contable_all') }}</button>
+            <button
+              class="px-3 py-2 rounded-md flex items-center gap-1 text-xs font-semibold transition-all"
+              :class="selectedContable === '1' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              @click="onContableSelect('1')"
+            >
+              <span class="material-symbols-outlined text-sm">inventory</span>
+              {{ t('catalog.contable_yes') }}
+            </button>
+            <button
+              class="px-3 py-2 rounded-md flex items-center gap-1 text-xs font-semibold transition-all"
+              :class="selectedContable === '0' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              @click="onContableSelect('0')"
+            >
+              <span class="material-symbols-outlined text-sm">precision_manufacturing</span>
+              {{ t('catalog.contable_no') }}
+            </button>
+          </div>
+
           <!-- Toggle vista -->
           <div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-lg">
             <button
@@ -393,8 +418,9 @@ const sidebarOpen = ref(false)
 
 const currentPage        = computed(() => Number(route.query.page)     || 1)
 const currentPerPage     = computed(() => Number(route.query.per_page) || 12)
-const selectedCategoryId = computed(() => route.query.category ? Number(route.query.category) : null)
-const selectedProjectId  = computed(() => route.query.project  ? Number(route.query.project)  : null)
+const selectedCategoryId = computed(() => route.query.category  ? Number(route.query.category) : null)
+const selectedProjectId  = computed(() => route.query.project   ? Number(route.query.project)  : null)
+const selectedContable   = computed(() => route.query.contable !== undefined ? (route.query.contable as string) : null)
 const searchQuery        = computed(() => (route.query.search as string) || undefined)
 
 // ── Colores estado (vista lista) ──────────────────────────────────
@@ -460,6 +486,16 @@ function clearProject() {
   router.push({ query: q })
 }
 
+function onContableSelect(value: string | null) {
+  const q = { ...route.query, page: '1' }
+  if (value !== null) {
+    q.contable = value
+  } else {
+    delete q.contable
+  }
+  router.push({ query: q })
+}
+
 // ── Fetch ──────────────────────────────────────────────────────────
 const { apiFetch } = useApi()
 
@@ -478,7 +514,7 @@ const activeProjectName = computed(() =>
 
 // Clave dinámica para que useAsyncData re-fetche al cambiar parámetros
 const equipmentKey = computed(() =>
-  `catalog-equipment:${currentPage.value}:${currentPerPage.value}:${selectedCategoryId.value ?? 'all'}:${selectedProjectId.value ?? 'all'}:${searchQuery.value ?? ''}`,
+  `catalog-equipment:${currentPage.value}:${currentPerPage.value}:${selectedCategoryId.value ?? 'all'}:${selectedProjectId.value ?? 'all'}:${selectedContable.value ?? 'all'}:${searchQuery.value ?? ''}`,
 )
 
 const { data: equipmentData, pending, error } = await useAsyncData<EquipmentApiResponse>(
@@ -488,8 +524,9 @@ const { data: equipmentData, pending, error } = await useAsyncData<EquipmentApiR
       page:     currentPage.value,
       per_page: currentPerPage.value,
       ...(selectedCategoryId.value !== null ? { category_with_children: selectedCategoryId.value } : {}),
-      ...(selectedProjectId.value  !== null ? { project_id: selectedProjectId.value }              : {}),
-      ...(searchQuery.value                 ? { search: searchQuery.value }                         : {}),
+      ...(selectedProjectId.value !== null ? { project_id:   selectedProjectId.value }  : {}),
+      ...(selectedContable.value  !== null ? { es_contable: selectedContable.value }   : {}),
+      ...(searchQuery.value                ? { search:      searchQuery.value }         : {}),
     },
   }),
   { watch: [equipmentKey] },
