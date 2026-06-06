@@ -72,25 +72,72 @@
           </h1>
         </div>
 
-        <!-- Toggle vista -->
-        <div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-lg shrink-0">
-          <button
-            class="px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold transition-all"
-            :class="view === 'card' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
-            @click="view = 'card'"
-          >
-            <span class="material-symbols-outlined text-sm">grid_view</span>
-            {{ t('catalog.card_view') }}
-          </button>
-          <button
-            class="px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium transition-all"
-            :class="view === 'list' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
-            @click="view = 'list'"
-          >
-            <span class="material-symbols-outlined text-sm">list</span>
-            {{ t('catalog.list_view') }}
-          </button>
+        <!-- Controles derecha: filtro proyecto + toggle vista -->
+        <div class="flex flex-wrap items-center gap-3 shrink-0">
+
+          <!-- Filtro por proyecto -->
+          <div class="relative flex items-center">
+            <span class="material-symbols-outlined text-sm text-slate-400 absolute left-2.5 pointer-events-none">
+              construction
+            </span>
+            <select
+              :value="selectedProjectId ?? ''"
+              class="pl-8 pr-8 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium
+                     text-slate-600 appearance-none transition-all cursor-pointer"
+              :class="selectedProjectId ? 'border-primary text-primary' : ''"
+              @change="onProjectSelect(($event.target as HTMLSelectElement).value)"
+            >
+              <option value="">{{ t('catalog.all_projects') }}</option>
+              <option
+                v-for="proj in allProjects"
+                :key="proj.id"
+                :value="proj.id"
+              >
+                {{ proj.nombre_proy }}
+              </option>
+            </select>
+            <span class="material-symbols-outlined text-xs text-slate-400 absolute right-2 pointer-events-none">
+              expand_more
+            </span>
+          </div>
+
+          <!-- Toggle vista -->
+          <div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-lg">
+            <button
+              class="px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold transition-all"
+              :class="view === 'card' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              @click="view = 'card'"
+            >
+              <span class="material-symbols-outlined text-sm">grid_view</span>
+              {{ t('catalog.card_view') }}
+            </button>
+            <button
+              class="px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium transition-all"
+              :class="view === 'list' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              @click="view = 'list'"
+            >
+              <span class="material-symbols-outlined text-sm">list</span>
+              {{ t('catalog.list_view') }}
+            </button>
+          </div>
         </div>
+      </div>
+
+      <!-- Chips de filtros activos -->
+      <div v-if="searchQuery || selectedProjectId" class="mb-5 flex flex-wrap items-center gap-2">
+
+        <!-- Chip proyecto activo -->
+        <template v-if="selectedProjectId">
+          <span class="text-xs text-slate-500">{{ t('catalog.filter_active') }}:</span>
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-semibold ring-1 ring-amber-200">
+            <span class="material-symbols-outlined text-sm">construction</span>
+            {{ activeProjectName }}
+            <button class="ml-1 hover:text-amber-500 transition-colors" @click="clearProject">
+              <span class="material-symbols-outlined text-sm leading-none">close</span>
+            </button>
+          </span>
+        </template>
+
       </div>
 
       <!-- Chip de búsqueda activa -->
@@ -287,6 +334,12 @@ const { imageUrl } = useImageUrl()
 useHead({ title: () => `${t('catalog.title')} — Intime Control` })
 
 // ── Tipos ──────────────────────────────────────────────────────────
+interface Project {
+  id: number
+  id_itc: string | null
+  nombre_proy: string
+}
+
 interface Category {
   id: number
   id_padre: number | null
@@ -341,6 +394,7 @@ const sidebarOpen = ref(false)
 const currentPage        = computed(() => Number(route.query.page)     || 1)
 const currentPerPage     = computed(() => Number(route.query.per_page) || 12)
 const selectedCategoryId = computed(() => route.query.category ? Number(route.query.category) : null)
+const selectedProjectId  = computed(() => route.query.project  ? Number(route.query.project)  : null)
 const searchQuery        = computed(() => (route.query.search as string) || undefined)
 
 // ── Colores estado (vista lista) ──────────────────────────────────
@@ -399,15 +453,32 @@ function clearSearch() {
   router.push({ query: q })
 }
 
+function clearProject() {
+  const q = { ...route.query }
+  delete q.project
+  q.page = '1'
+  router.push({ query: q })
+}
+
 // ── Fetch ──────────────────────────────────────────────────────────
 const { apiFetch } = useApi()
 
 const { categories: allCategories, fetchIfNeeded: fetchCategories } = useCategories()
 await fetchCategories()
 
+// Proyectos
+const { data: projectsData } = await useAsyncData<Project[]>(
+  'catalog-projects',
+  () => apiFetch<Project[]>('/eqm/projects', 'public'),
+)
+const allProjects = computed<Project[]>(() => projectsData.value ?? [])
+const activeProjectName = computed(() =>
+  allProjects.value.find((p) => p.id === selectedProjectId.value)?.nombre_proy ?? '',
+)
+
 // Clave dinámica para que useAsyncData re-fetche al cambiar parámetros
 const equipmentKey = computed(() =>
-  `catalog-equipment:${currentPage.value}:${currentPerPage.value}:${selectedCategoryId.value ?? 'all'}:${searchQuery.value ?? ''}`,
+  `catalog-equipment:${currentPage.value}:${currentPerPage.value}:${selectedCategoryId.value ?? 'all'}:${selectedProjectId.value ?? 'all'}:${searchQuery.value ?? ''}`,
 )
 
 const { data: equipmentData, pending, error } = await useAsyncData<EquipmentApiResponse>(
@@ -417,6 +488,7 @@ const { data: equipmentData, pending, error } = await useAsyncData<EquipmentApiR
       page:     currentPage.value,
       per_page: currentPerPage.value,
       ...(selectedCategoryId.value !== null ? { category_with_children: selectedCategoryId.value } : {}),
+      ...(selectedProjectId.value  !== null ? { project_id: selectedProjectId.value }              : {}),
       ...(searchQuery.value                 ? { search: searchQuery.value }                         : {}),
     },
   }),
@@ -464,6 +536,17 @@ function onCategorySelect(id: number | null) {
   if (id !== null)           q.category = id
   if (route.query.search)    q.search   = route.query.search as string
   if (route.query.per_page)  q.per_page = route.query.per_page as string
+  if (route.query.project)   q.project  = route.query.project as string
+  router.push({ query: q })
+}
+
+function onProjectSelect(value: string) {
+  const q = { ...route.query, page: '1' }
+  if (value) {
+    q.project = value
+  } else {
+    delete q.project
+  }
   router.push({ query: q })
 }
 

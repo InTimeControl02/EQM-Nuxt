@@ -75,6 +75,8 @@
     "serial":          "N/S",
     "year":            "Año",
     "all_categories":  "Todas las categorías",
+    "all_projects":    "Todos los proyectos",
+    "filter_active":   "Filtro activo",
     "sidebar_title":   "Categorías de Equipo",
     "sidebar_subtitle":"Inventario de Precisión",
     "loading":         "Cargando equipos...",

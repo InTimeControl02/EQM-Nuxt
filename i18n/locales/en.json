@@ -75,6 +75,8 @@
     "serial":          "S/N",
     "year":            "Year",
     "all_categories":  "All categories",
+    "all_projects":    "All projects",
+    "filter_active":   "Active filter",
     "sidebar_title":   "Equipment Categories",
     "sidebar_subtitle":"Precision Inventory",
     "loading":         "Loading equipment...",
