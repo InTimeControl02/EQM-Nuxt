@@ -12,7 +12,7 @@
 
     <!-- ── Sidebar (desktop) ─────────────────────────────────────── -->
     <aside
-      class="hidden md:block w-72 shrink-0 bg-slate-50 border-r border-slate-100
+      class="hidden md:block w-60 xl:w-72 shrink-0 bg-slate-50 border-r border-slate-100
              sticky top-14 h-[calc(100vh-56px)] overflow-y-auto no-scrollbar"
     >
       <CatalogSidebar
@@ -52,8 +52,10 @@
       </Transition>
     </Teleport>
 
-    <!-- ── Contenido principal ───────────────────────────────────── -->
-    <div class="flex-1 min-w-0 p-8">
+    <!-- ── Contenido principal ─────────────────────────────────────
+         Padding escalonado: p-8 fijo le robaba 64px al ancho útil justo en
+         el rango md–lg, donde el sidebar ya consume 240px. -->
+    <div class="flex-1 min-w-0 p-4 sm:p-6 xl:p-8">
 
       <!-- Cabecera -->
       <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-6">
@@ -72,77 +74,72 @@
           </h1>
         </div>
 
-        <!-- Controles derecha: filtro proyecto + toggle vista -->
-        <div class="flex flex-wrap items-center gap-3 shrink-0">
+        <!-- Controles derecha: filtro proyecto + contable + toggle vista
 
-          <!-- Filtro por proyecto -->
-          <div class="relative flex items-center">
-            <span class="material-symbols-outlined text-sm text-slate-400 absolute left-2.5 pointer-events-none">
-              construction
-            </span>
-            <select
-              :value="selectedProjectId ?? ''"
-              class="pl-8 pr-8 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium
-                     text-slate-600 appearance-none transition-all cursor-pointer"
-              :class="selectedProjectId ? 'border-primary text-primary' : ''"
-              @change="onProjectSelect(($event.target as HTMLSelectElement).value)"
-            >
-              <option value="">{{ t('catalog.all_projects') }}</option>
-              <option
-                v-for="proj in allProjects"
-                :key="proj.id"
-                :value="proj.id"
-              >
-                {{ proj.nombre_proy }}
-              </option>
-            </select>
-            <span class="material-symbols-outlined text-xs text-slate-400 absolute right-2 pointer-events-none">
-              expand_more
-            </span>
-          </div>
+             min-w-0 + sin shrink-0: `shrink-0` fijaba el ancho base del grupo
+             a su max-content, así que flex-wrap nunca llegaba a envolver y los
+             controles se salían de pantalla entre md y lg. -->
+        <div class="flex flex-wrap items-center gap-2 xl:gap-3 min-w-0 w-full md:w-auto md:justify-end">
 
-          <!-- Filtro contable -->
-          <div class="flex items-center bg-surface-container-low p-1 rounded-lg">
+          <!-- Filtro por proyecto (ancho fijo, la etiqueta se trunca) -->
+          <FilterSelect
+            :model-value="selectedProjectId !== null ? String(selectedProjectId) : null"
+            :options="projectOptions"
+            :placeholder="t('catalog.all_projects')"
+            icon="construction"
+            width-class="w-full sm:w-40 xl:w-52"
+            @update:model-value="onProjectSelect($event ?? '')"
+          />
+
+          <!-- Filtro contable
+               Entre md y xl el ancho útil es mínimo (viewport − sidebar de
+               240px − padding), así que los labels se ocultan y quedan solo
+               los iconos. El texto vuelve en xl. -->
+          <div class="flex items-center bg-surface-container-low p-1 rounded-lg shrink-0">
             <button
-              class="px-3 py-2 rounded-md text-xs font-semibold transition-all"
+              class="px-3 py-2 rounded-md text-xs font-semibold transition-all whitespace-nowrap"
               :class="selectedContable === null ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
               @click="onContableSelect(null)"
             >{{ t('catalog.contable_all') }}</button>
             <button
-              class="px-3 py-2 rounded-md flex items-center gap-1 text-xs font-semibold transition-all"
+              class="px-2.5 xl:px-3 py-2 rounded-md flex items-center gap-1 text-xs font-semibold transition-all"
               :class="selectedContable === '1' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              :title="t('catalog.contable_yes')"
               @click="onContableSelect('1')"
             >
               <span class="material-symbols-outlined text-sm">inventory</span>
-              {{ t('catalog.contable_yes') }}
+              <span class="hidden xl:inline whitespace-nowrap">{{ t('catalog.contable_yes') }}</span>
             </button>
             <button
-              class="px-3 py-2 rounded-md flex items-center gap-1 text-xs font-semibold transition-all"
+              class="px-2.5 xl:px-3 py-2 rounded-md flex items-center gap-1 text-xs font-semibold transition-all"
               :class="selectedContable === '0' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              :title="t('catalog.contable_no')"
               @click="onContableSelect('0')"
             >
               <span class="material-symbols-outlined text-sm">precision_manufacturing</span>
-              {{ t('catalog.contable_no') }}
+              <span class="hidden xl:inline whitespace-nowrap">{{ t('catalog.contable_no') }}</span>
             </button>
           </div>
 
           <!-- Toggle vista -->
-          <div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-lg">
+          <div class="flex items-center gap-1 xl:gap-2 bg-surface-container-low p-1 rounded-lg shrink-0">
             <button
-              class="px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold transition-all"
+              class="px-2.5 xl:px-4 py-2 rounded-md flex items-center gap-2 text-sm font-semibold transition-all"
               :class="view === 'card' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              :title="t('catalog.card_view')"
               @click="view = 'card'"
             >
               <span class="material-symbols-outlined text-sm">grid_view</span>
-              {{ t('catalog.card_view') }}
+              <span class="hidden xl:inline whitespace-nowrap">{{ t('catalog.card_view') }}</span>
             </button>
             <button
-              class="px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium transition-all"
+              class="px-2.5 xl:px-4 py-2 rounded-md flex items-center gap-2 text-sm font-medium transition-all"
               :class="view === 'list' ? 'bg-white shadow-sm text-primary' : 'text-slate-500 hover:bg-white/50'"
+              :title="t('catalog.list_view')"
               @click="view = 'list'"
             >
               <span class="material-symbols-outlined text-sm">list</span>
-              {{ t('catalog.list_view') }}
+              <span class="hidden xl:inline whitespace-nowrap">{{ t('catalog.list_view') }}</span>
             </button>
           </div>
         </div>
@@ -510,6 +507,9 @@ const { data: projectsData } = await useAsyncData<Project[]>(
 const allProjects = computed<Project[]>(() => projectsData.value ?? [])
 const activeProjectName = computed(() =>
   allProjects.value.find((p) => p.id === selectedProjectId.value)?.nombre_proy ?? '',
+)
+const projectOptions = computed(() =>
+  allProjects.value.map((p) => ({ value: String(p.id), label: p.nombre_proy })),
 )
 
 // Clave dinámica para que useAsyncData re-fetche al cambiar parámetros

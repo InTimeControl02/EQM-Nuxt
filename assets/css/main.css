@@ -87,10 +87,42 @@ body {
   scrollbar-width: none;
 }
 
-/* Material Symbols */
+/* ── Material Symbols ────────────────────────────────────────────
+   Self-hosteada a mano (no vía @nuxtjs/google-fonts) porque ese módulo
+   solo permite un `font-display` global y aquí necesitamos `block`:
+   los iconos son LIGADURAS, el nombre del icono está literal en el DOM.
+   Con `swap` el navegador muestra el fallback de inmediato → el usuario
+   ve la palabra "shopping_cart" hasta que llegue el woff2.
+   Con `block` muestra un hueco invisible (hasta 3s) y nunca la palabra.
+
+   Ojo: quitar el fallback del font-family NO evita el texto crudo — por
+   spec siempre queda el font default del navegador. De ahí el guard JS
+   en plugins/icon-font.client.ts + el bloque .ms-font-failed de abajo. */
+@font-face {
+  font-family: 'Material Symbols Outlined';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('/fonts/material-symbols-outlined-v1.woff2') format('woff2');
+}
+
+/* liga / nowrap / ltr vienen del snippet oficial de Google: evitan que el
+   nombre del icono se parta en líneas o pierda la ligadura.
+   letter-spacing: normal blinda contra el bug de Blink donde un tracking
+   heredado ≠ 0 desactiva las ligaduras. */
 .material-symbols-outlined {
-  font-family: 'Material Symbols Outlined', sans-serif;
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
   font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-feature-settings: 'liga';
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  letter-spacing: normal;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
   vertical-align: middle;
   line-height: 1;
   user-select: none;
@@ -98,6 +130,32 @@ body {
 
 .material-symbols-outlined.filled {
   font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* ── Fallback: la font de iconos no cargó ─────────────────────────
+   plugins/icon-font.client.ts pone .ms-font-failed en <html> si el woff2
+   falla o tarda más de 5s. Colapsamos el span a un cuadrado de 1em y
+   empujamos el texto fuera con text-indent, así en vez de la palabra el
+   usuario ve un placeholder neutro que respeta tamaño, color y layout.
+   1em funciona porque los glifos de Material Symbols son cuadrados y
+   heredan las clases text-* de Tailwind (text-xs … text-5xl). */
+.ms-font-failed .material-symbols-outlined {
+  display: inline-block;
+  position: relative;
+  width: 1em;
+  height: 1em;
+  overflow: hidden;
+  text-indent: -100em;
+  white-space: nowrap;
+}
+
+.ms-font-failed .material-symbols-outlined::after {
+  content: '';
+  position: absolute;
+  inset: 0.12em;
+  border: 0.085em solid currentColor;
+  border-radius: 0.16em;
+  opacity: 0.45;
 }
 
 /* ── Componentes reutilizables ──────────────────────────────── */

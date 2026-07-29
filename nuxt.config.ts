@@ -23,6 +23,14 @@ export default defineNuxtConfig({
   },
 
   // Google Fonts
+  // download: true (default del módulo) → descarga los woff2 en build y los
+  // sirve desde nuestro propio origen. Nada depende de fonts.googleapis.com
+  // en runtime.
+  //
+  // Material Symbols NO va aquí: el módulo solo acepta un `display` global y
+  // los iconos necesitan `font-display: block` (hueco invisible) mientras el
+  // texto necesita `swap`. Está declarado a mano en assets/css/main.css
+  // apuntando a public/fonts/material-symbols-outlined-v1.woff2.
   googleFonts: {
     families: {
       Manrope: [400, 600, 700, 800],
@@ -61,9 +69,14 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Catálogo de equipos de instrumentación industrial.' },
       ],
       link: [
+        // La font de iconos usa font-display: block → mientras carga hay un
+        // hueco invisible. Precargarla acorta ese hueco al mínimo.
         {
-          rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200',
+          rel: 'preload',
+          as: 'font',
+          type: 'font/woff2',
+          href: '/fonts/material-symbols-outlined-v1.woff2',
+          crossorigin: 'anonymous',
         },
         {
           rel: 'icon',
