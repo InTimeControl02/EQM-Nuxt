@@ -94,9 +94,12 @@ export const useAuthStore = defineStore('auth', {
         this._setSession(res.token!, res.user!)
         return { success: true as const, verificationRequired: false as const }
       } catch (err: any) {
+        // Correo ya registrado y verificado → 422 solo con `message`, sin `errors`
+        // (validación normal de campos sí trae `errors`; ambos casos se cubren aquí).
         return {
           success: false as const,
-          errors: err?.data?.errors as Record<string, string[]> | undefined,
+          errors:  err?.data?.errors  as Record<string, string[]> | undefined,
+          message: err?.data?.message as string | undefined,
         }
       } finally {
         this.isLoading = false
@@ -157,6 +160,65 @@ export const useAuthStore = defineStore('auth', {
       } catch (err: any) {
         return {
           success: false as const,
+          message: err?.data?.message as string | undefined,
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async forgotPassword(correo: string) {
+      this.isLoading = true
+      const config = useRuntimeConfig()
+      try {
+        const res = await $fetch<{ message: string }>(
+          `${config.public.apiBase}/eqm/auth/forgot-password`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${config.public.apiPublicToken}`,
+              Accept: 'application/json',
+            },
+            body: { correo },
+          },
+        )
+        return { success: true as const, message: res.message }
+      } catch (err: any) {
+        return {
+          success: false as const,
+          errors:  err?.data?.errors  as Record<string, string[]> | undefined,
+          message: err?.data?.message as string | undefined,
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async resetPassword(data: {
+      correo: string
+      code: string
+      password: string
+      password_confirmation: string
+    }) {
+      this.isLoading = true
+      const config = useRuntimeConfig()
+      try {
+        const res = await $fetch<{ message: string }>(
+          `${config.public.apiBase}/eqm/auth/reset-password`,
+          {
+            method: 'POST',
+            headers: {
+              Authorization: `Bearer ${config.public.apiPublicToken}`,
+              Accept: 'application/json',
+            },
+            body: data,
+          },
+        )
+        return { success: true as const, message: res.message }
+      } catch (err: any) {
+        return {
+          success: false as const,
+          errors:  err?.data?.errors  as Record<string, string[]> | undefined,
           message: err?.data?.message as string | undefined,
         }
       } finally {

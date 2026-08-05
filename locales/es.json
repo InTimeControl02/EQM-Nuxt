@@ -69,7 +69,31 @@
     "have_account":          "¿Ya tienes cuenta?",
     "no_account":            "¿No tienes cuenta?",
     "switch_to_login":       "Inicia sesión",
-    "switch_to_register":    "Regístrate aquí"
+    "switch_to_register":    "Regístrate aquí",
+    "register_error":        "No se pudo completar el registro. Intenta de nuevo.",
+
+    "verify_title":          "Verifica tu correo",
+    "verify_subtitle":       "Ingresa el código de 6 dígitos que enviamos a",
+    "verify_submit":         "Verificar",
+    "verify_error":          "Código incorrecto. Intenta de nuevo.",
+    "verify_resend":         "Reenviar código",
+    "verify_resend_wait":    "Reenviar en {s}s",
+    "verify_resend_sent":    "Código reenviado",
+    "verify_back":           "Volver",
+
+    "forgot_password":       "¿Olvidaste tu contraseña?",
+    "forgot_title":          "Recuperar contraseña",
+    "forgot_subtitle":       "Ingresa tu correo y te enviaremos un código para restablecer tu contraseña.",
+    "forgot_submit":         "Enviar código",
+    "forgot_resend":         "Reenviar código",
+    "forgot_error":          "No se pudo enviar el código. Intenta de nuevo.",
+
+    "reset_title":           "Restablecer contraseña",
+    "reset_subtitle":        "Ingresa el código de 6 dígitos que enviamos a",
+    "new_password":          "Nueva contraseña",
+    "reset_submit":          "Cambiar contraseña",
+    "reset_success":         "Contraseña actualizada. Inicia sesión con tu nueva contraseña.",
+    "reset_error":           "Código incorrecto. Intenta de nuevo."
   },
   "footer": {
     "tagline":    "Soluciones de medición industrial de alta gama y gestión de equipos para líderes globales de la construcción desde 1994.",

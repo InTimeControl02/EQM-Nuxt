@@ -180,7 +180,22 @@
     "verify_resend_wait":    "Resend in {s}s",
     "verify_resend_sent":    "Code resent!",
     "verify_back":           "Back to sign in",
-    "verify_error":          "Invalid or expired code. Try again."
+    "verify_error":          "Invalid or expired code. Try again.",
+    "register_error":        "Could not complete registration. Please try again.",
+
+    "forgot_password":       "Forgot your password?",
+    "forgot_title":          "Recover password",
+    "forgot_subtitle":       "Enter your email and we'll send you a code to reset your password.",
+    "forgot_submit":         "Send code",
+    "forgot_resend":         "Resend code",
+    "forgot_error":          "Could not send the code. Please try again.",
+
+    "reset_title":           "Reset password",
+    "reset_subtitle":        "We sent a 6-digit code to",
+    "new_password":          "New password",
+    "reset_submit":          "Change password",
+    "reset_success":         "Password updated. Sign in with your new password.",
+    "reset_error":           "Invalid or expired code. Try again."
   },
   "footer": {
     "tagline":   "Providing high-end industrial measurement solutions and equipment management for global construction leaders since 1994.",

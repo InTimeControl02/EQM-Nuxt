@@ -69,7 +69,31 @@
     "have_account":          "Already have an account?",
     "no_account":            "Don't have an account?",
     "switch_to_login":       "Sign in",
-    "switch_to_register":    "Register here"
+    "switch_to_register":    "Register here",
+    "register_error":        "Could not complete registration. Please try again.",
+
+    "verify_title":          "Verify your email",
+    "verify_subtitle":       "Enter the 6-digit code we sent to",
+    "verify_submit":         "Verify",
+    "verify_error":          "Incorrect code. Please try again.",
+    "verify_resend":         "Resend code",
+    "verify_resend_wait":    "Resend in {s}s",
+    "verify_resend_sent":    "Code resent",
+    "verify_back":           "Back",
+
+    "forgot_password":       "Forgot your password?",
+    "forgot_title":          "Recover password",
+    "forgot_subtitle":       "Enter your email and we'll send you a code to reset your password.",
+    "forgot_submit":         "Send code",
+    "forgot_resend":         "Resend code",
+    "forgot_error":          "Could not send the code. Please try again.",
+
+    "reset_title":           "Reset password",
+    "reset_subtitle":        "Enter the 6-digit code we sent to",
+    "new_password":          "New password",
+    "reset_submit":          "Change password",
+    "reset_success":         "Password updated. Sign in with your new password.",
+    "reset_error":           "Incorrect code. Please try again."
   },
   "footer": {
     "tagline":   "Providing high-end industrial measurement solutions and equipment management for global construction leaders since 1994.",
