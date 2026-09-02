@@ -67,8 +67,11 @@
           <span
             v-if="cartStore.itemCount > 0"
             class="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 rounded-full
-                   bg-primary-fixed-dim text-on-primary-fixed text-[10px] font-bold
-                   flex items-center justify-center leading-none"
+                   text-[10px] font-bold flex items-center justify-center leading-none"
+            :class="cartStore.hasUnavailable
+              ? 'bg-red-500 text-white'
+              : 'bg-primary-fixed-dim text-on-primary-fixed'"
+            :title="cartStore.hasUnavailable ? t('cart.item_unavailable') : undefined"
           >
             {{ cartStore.itemCount }}
           </span>

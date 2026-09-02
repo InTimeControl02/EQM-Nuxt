@@ -155,7 +155,10 @@
     "login_required":    "Inicia sesión para solicitar equipo",
     "qty":               "Cantidad",
     "adding":            "Agregando...",
-    "qty_items":         "{n} equipo en carrito | {n} equipos en carrito"
+    "qty_items":         "{n} equipo en carrito | {n} equipos en carrito",
+    "item_unavailable":  "Ya no está disponible",
+    "unavailable_warning": "Un equipo de tu carrito ya no está disponible y debe quitarse antes de enviar la solicitud. | {n} equipos de tu carrito ya no están disponibles y deben quitarse antes de enviar la solicitud.",
+    "remove_unavailable": "Quitar equipo no disponible | Quitar {n} equipos no disponibles"
   },
   "auth": {
     "tab_login":             "Iniciar sesión",

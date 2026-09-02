@@ -84,24 +84,75 @@
         <!-- Items + submit -->
         <div v-else class="space-y-3">
 
+          <!-- ── Aviso: equipos ocultados por el admin ──────────────── -->
+          <div
+            v-if="cartStore.hasUnavailable"
+            class="rounded-2xl bg-red-50 border border-red-200 px-5 py-4 !mb-5"
+          >
+            <p class="text-sm text-red-600 font-bold flex items-start gap-1.5">
+              <span class="material-symbols-outlined text-base shrink-0">error</span>
+              {{ t('cart.unavailable_warning', { n: cartStore.unavailableItems.length }, cartStore.unavailableItems.length) }}
+            </p>
+            <ul class="mt-2 ml-6 list-disc text-sm text-red-600 space-y-0.5">
+              <li v-for="item in cartStore.unavailableItems" :key="item.id">
+                {{ item.nombre_snapshot }}
+              </li>
+            </ul>
+            <button
+              class="mt-3 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-red-500 text-white
+                     text-sm font-bold hover:bg-red-600 transition-colors
+                     disabled:opacity-60 disabled:cursor-not-allowed"
+              :disabled="cleaningUnavailable"
+              @click="removeAllUnavailable"
+            >
+              <span
+                class="material-symbols-outlined text-base"
+                :class="{ 'animate-spin': cleaningUnavailable }"
+              >
+                {{ cleaningUnavailable ? 'progress_activity' : 'delete_sweep' }}
+              </span>
+              {{ t('cart.remove_unavailable', { n: cartStore.unavailableItems.length }, cartStore.unavailableItems.length) }}
+            </button>
+          </div>
+
           <!-- ── Cada item ─────────────────────────────────────────── -->
           <div
             v-for="item in cartStore.items"
             :key="item.id"
-            class="bg-surface-container-lowest rounded-2xl p-5 border border-slate-100 shadow-sm
-                   flex items-center gap-4"
+            class="rounded-2xl p-5 border shadow-sm flex items-center gap-4"
+            :class="isUnavailable(item)
+              ? 'bg-red-50/60 border-red-200'
+              : 'bg-surface-container-lowest border-slate-100'"
           >
             <!-- Ícono -->
             <div
-              class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0"
+              class="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+              :class="isUnavailable(item) ? 'bg-red-100' : 'bg-primary/10'"
             >
-              <span class="material-symbols-outlined text-primary text-2xl">precision_manufacturing</span>
+              <span
+                class="material-symbols-outlined text-2xl"
+                :class="isUnavailable(item) ? 'text-red-500' : 'text-primary'"
+              >
+                {{ isUnavailable(item) ? 'do_not_disturb_on' : 'precision_manufacturing' }}
+              </span>
             </div>
 
             <!-- Nombre + código + error de stock -->
             <div class="flex-1 min-w-0">
-              <p class="font-bold text-on-surface truncate">{{ item.nombre_snapshot }}</p>
+              <p
+                class="font-bold truncate"
+                :class="isUnavailable(item) ? 'text-red-600 line-through' : 'text-on-surface'"
+              >
+                {{ item.nombre_snapshot }}
+              </p>
               <p class="text-xs text-slate-400 font-mono mt-0.5">{{ item.codigo_snapshot }}</p>
+              <p
+                v-if="isUnavailable(item)"
+                class="text-xs text-red-600 font-semibold flex items-center gap-1 mt-1"
+              >
+                <span class="material-symbols-outlined text-sm">block</span>
+                {{ t('cart.item_unavailable') }}
+              </p>
               <Transition name="stock-err">
                 <p
                   v-if="stockErrors[item.id]"
@@ -185,9 +236,9 @@
             <!-- Error de envío -->
             <p
               v-if="submitError"
-              class="mt-3 text-sm text-red-500 flex items-center gap-1.5"
+              class="mt-3 text-sm text-red-600 font-semibold flex items-start gap-1.5"
             >
-              <span class="material-symbols-outlined text-base">error</span>
+              <span class="material-symbols-outlined text-base shrink-0">error</span>
               {{ submitError }}
             </p>
 
@@ -198,7 +249,7 @@
                      flex items-center justify-center gap-3
                      hover:scale-[1.01] active:scale-[0.99]
                      disabled:opacity-60 disabled:scale-100 disabled:cursor-not-allowed"
-              :disabled="submitting || cartStore.isEmpty"
+              :disabled="submitting || cartStore.isEmpty || cartStore.hasUnavailable"
               @click="submitCart"
             >
               <span
@@ -233,6 +284,11 @@ const submitError = ref<string | null>(null)
 const updatingItems = ref(new Set<number>())
 const removingItems = ref(new Set<number>())
 const stockErrors   = ref<Record<number, string>>({})
+const cleaningUnavailable = ref(false)
+
+// Equipos que el admin ocultó (mostrar_en_front=false) — detectados al cargar el carrito
+const isUnavailable = (item: CartItem) =>
+  cartStore.unavailableIds.includes(item.equipment_id)
 
 onMounted(async () => {
   if (auth.isAuthenticated) await cartStore.fetchCart()
@@ -261,6 +317,14 @@ async function removeItem(itemId: number) {
   removingItems.value = new Set([...removingItems.value, itemId])
   await cartStore.removeItem(itemId)
   removingItems.value = new Set([...removingItems.value].filter(id => id !== itemId))
+  if (!cartStore.hasUnavailable) submitError.value = null
+}
+
+async function removeAllUnavailable() {
+  cleaningUnavailable.value = true
+  await cartStore.removeUnavailableItems()
+  cleaningUnavailable.value = false
+  submitError.value = null
 }
 
 async function submitCart() {
@@ -272,6 +336,7 @@ async function submitCart() {
     submitted.value = true
   } else {
     submitError.value = result.message ?? t('cart.submit')
+    if (result.unavailable?.length) cartStore.markUnavailableByName(result.unavailable)
   }
 }
 

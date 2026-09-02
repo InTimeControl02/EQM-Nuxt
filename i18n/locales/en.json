@@ -155,7 +155,10 @@
     "login_required":    "Sign in to request equipment",
     "qty":               "Quantity",
     "adding":            "Adding...",
-    "qty_items":         "{n} item in cart | {n} items in cart"
+    "qty_items":         "{n} item in cart | {n} items in cart",
+    "item_unavailable":  "No longer available",
+    "unavailable_warning": "One item in your cart is no longer available and must be removed before submitting. | {n} items in your cart are no longer available and must be removed before submitting.",
+    "remove_unavailable": "Remove unavailable item | Remove {n} unavailable items"
   },
   "auth": {
     "tab_login":             "Sign In",
